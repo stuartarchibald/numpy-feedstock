@@ -9,4 +9,6 @@ printf "\n\n__mkl_version__ = \"$mkl\"\n" >> numpy/__init__.py
 fi
 
 
-$PYTHON -m pip install --no-deps --ignore-installed .
+$PYTHON setup.py config
+$PYTHON setup.py build
+$PYTHON setup.py install
