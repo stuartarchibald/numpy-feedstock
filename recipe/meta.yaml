@@ -1,5 +1,4 @@
 {% set version = "1.13.1" %}
-{% set variant = "openblas" %}
 
 package:
   name: numpy
@@ -9,26 +8,28 @@ source:
   fn: numpy-{{ version }}.tar.gz
   url: https://github.com/numpy/numpy/archive/v{{ version }}.tar.gz
   sha256: cf8652b96582b282a5bb710aa4fe2300dca63bdd678a3cd7820314cb6c97ca89
+  patches:
+    - mklfft.patch
 
 build:
-  number: 201
-  # We lack openblas on Windows, and therefore can't build numpy there either currently.
-  skip: true  # [win]
+  number: 1
   features:
-    - blas_{{ variant }}
+    - nomkl    # [x86 and nomkl]
 
 requirements:
   build:
-    - toolchain
+    - {{ compiler('c') }}
+    - {{ compiler('fortran') }}
+  host:
     - cython
     - python
     - setuptools
-    - blas 1.1 {{ variant }}
-    - openblas 0.2.20|0.2.20.*
+    - mkl-devel                   # [not nomkl]
+    - openblas                    # [nomkl]
   run:
     - python
-    - blas 1.1 {{ variant }}
-    - openblas 0.2.20|0.2.20.*
+    - openblas                    # [nomkl]
+    # mkl runtime added by run_exports for mkl-devel
 
 test:
   requires:
