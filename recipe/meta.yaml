@@ -5,16 +5,20 @@ package:
   version: {{ version }}
 
 source:
-  fn: numpy-{{ version }}.tar.gz
   url: https://github.com/numpy/numpy/archive/v{{ version }}.tar.gz
   sha256: cf8652b96582b282a5bb710aa4fe2300dca63bdd678a3cd7820314cb6c97ca89
   patches:
     - mklfft.patch
+    - osx-dist.patch
 
 build:
   number: 1
+  # conda 4.4+ can use this
+  requires_features:
+    blas: {{ blas_impl }}
+  # this is for conda 4.3 and below
   features:
-    - nomkl    # [x86 and nomkl]
+    - nomkl    # [x86 and blas_impl != 'mkl']
 
 requirements:
   build:
@@ -23,13 +27,11 @@ requirements:
   host:
     - cython
     - python
-    - setuptools
-    - mkl-devel                   # [not nomkl]
-    - openblas                    # [nomkl]
+    - mkl-devel  {{ mkl }}  # [blas_impl == 'mkl']
+    - openblas    # [blas_impl == 'openblas']
   run:
     - python
-    - openblas                    # [nomkl]
-    # mkl runtime added by run_exports for mkl-devel
+    # openblas or mkl runtime included with run_exports
 
 test:
   requires:
