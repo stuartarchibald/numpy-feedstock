@@ -1,5 +1,4 @@
 {% set version = "1.8.2" %}
-{% set variant = "openblas" %}
 
 package:
   name: numpy
@@ -11,24 +10,27 @@ source:
   patches:
     # backport https://github.com/numpy/numpy/pull/6016
     - gzip.patch
+    - mklfft.patch
 
 build:
-  number: 200
-  skip: True  # [win]
+  number: 1
+  # conda 4.4+ can use this
+  requires_features:
+    blas: {{ blas_impl }}
+  # this is for conda 4.3 and below
   features:
-    - blas_{{ variant }}
+    - nomkl    # [x86 and blas_impl != 'mkl']
 
 requirements:
   build:
     - toolchain
     - cython
     - python
-    - blas 1.1 {{ variant }}
-    - openblas 0.2.19|0.2.19.*
+    - mkl-devel  {{ mkl }}  # [blas_impl == 'mkl']
+    - openblas    # [blas_impl == 'openblas']
   run:
     - python
-    - blas 1.1 {{ variant }}
-    - openblas 0.2.19|0.2.19.*
+    # openblas or mkl runtime included with run_exports
 
 test:
   requires:
