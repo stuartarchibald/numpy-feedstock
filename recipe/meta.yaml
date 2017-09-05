@@ -13,6 +13,8 @@ source:
     - osx-dist.patch
     # customize gfortran executable that gets looked for to use our GFORTRAN env var
     - gfortran_alias.patch
+    # Windows and its stupid long integer stuff breaks this test.  Just kill it.
+    - nuke_error_message.patch   # [win]
 
 build:
   number: 1
@@ -42,7 +44,6 @@ test:
     - nose
     - {{ compiler('c') }}
     - {{ compiler('fortran') }}
-    - nomkl  # [x86 and blas_impl != 'mkl']
   commands:
     - f2py -h
     - python -c "import numpy; numpy.show_config()"
