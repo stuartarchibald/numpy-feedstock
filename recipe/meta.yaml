@@ -10,6 +10,8 @@ source:
   patches:
     - mklfft.patch
     - osx-dist.patch
+    # customize gfortran executable that gets looked for to use our GFORTRAN env var
+    - gfortran_alias.patch
 
 build:
   number: 1
