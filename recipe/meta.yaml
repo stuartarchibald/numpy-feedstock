@@ -33,6 +33,7 @@ requirements:
     - python
     - mkl-devel  {{ mkl }}  # [blas_impl == 'mkl']
     - openblas    # [blas_impl == 'openblas']
+    - setuptools
   run:
     - python
     # openblas or mkl runtime included with run_exports
