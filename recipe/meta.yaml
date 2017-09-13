@@ -15,6 +15,8 @@ source:
     - gfortran_alias.patch
     # Windows and its stupid long integer stuff breaks this test.  Just kill it.
     - nuke_error_message.patch   # [win]
+    # Seems to be an issue with case sensitivity and Windows filesystem permission errors.
+    - windows_case_sensitivity.patch   # [win]
 
 build:
   number: 1
@@ -34,6 +36,7 @@ requirements:
     - python
     - setuptools
     - mkl-devel  {{ mkl }}  # [blas_impl == 'mkl']
+    - msinttypes   # [win and vc<14]
     - openblas    # [blas_impl == 'openblas']
     - setuptools
   run:
