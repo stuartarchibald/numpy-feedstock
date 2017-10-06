@@ -8,6 +8,7 @@ package:
 source:
   git_url: https://github.com/numpy/numpy
   git_tag: {{ commit }}
+  git_depth: 10
   patches:
     - mklfft.patch
     - osx-dist.patch
