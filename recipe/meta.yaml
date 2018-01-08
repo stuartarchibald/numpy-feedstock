@@ -1,5 +1,5 @@
-{% set version = "1.13.3" %}
-{% set commit = "31465473c491829d636c9104c390062cba005681" %}
+{% set version = "1.14.0" %}
+{% set commit = "6914bb41f0fb3c1ba500bae4e7d671da9536786f" %}
 
 package:
   name: numpy
@@ -63,7 +63,7 @@ about:
   summary: 'Array processing for numbers, strings, records, and objects.'
   description: |
     NumPy is the fundamental package needed for scientific computing with Python.
-  doc_url: https://docs.scipy.org/doc/numpy-1.13.0/reference/
+  doc_url: https://docs.scipy.org/doc/numpy-1.14.0/reference/
   dev_url: https://github.com/numpy/numpy
   dev_source_url: https://github.com/numpy/numpy/tree/master/doc
 
