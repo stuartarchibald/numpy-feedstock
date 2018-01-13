@@ -43,7 +43,7 @@ test:
     - nose
     - {{ compiler('c') }}
     - {{ compiler('fortran') }}
-    - nomkl  # [blas_impl == 'openblas']
+    - nomkl  # [x86 and blas_impl != 'mkl']
   commands:
     - f2py -h
     - python -c "import numpy; numpy.show_config()"
