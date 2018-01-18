@@ -19,9 +19,10 @@ source:
     - windows_case_sensitivity.patch   # [win]
     # precision issue with longdouble on ppc64le
     - 0001-skip-test_loss_of_precision_longcomplex-test.patch  # [ppc64le]
+    - 0005-intel-init-mkl.patch                 # [blas_impl == 'mkl']
 
 build:
-  number: 0
+  number: 2
   skip: True  # [blas_impl == 'openblas' and win]
   # conda 4.4+ can use this
   requires_features:
