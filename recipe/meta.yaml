@@ -17,6 +17,8 @@ source:
     - nuke_error_message.patch   # [win]
     # Seems to be an issue with case sensitivity and Windows filesystem permission errors.
     - windows_case_sensitivity.patch   # [win]
+    # precision issue with longdouble on ppc64le
+    - 0001-skip-test_loss_of_precision_longcomplex-test.patch  # [ppc64le]
 
 build:
   number: 0

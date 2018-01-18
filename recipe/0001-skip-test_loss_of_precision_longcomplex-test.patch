@@ -1,0 +1,33 @@
+From 2138ba4bdb5d8f80bbd502797972ab456a5d97af Mon Sep 17 00:00:00 2001
+From: Jonathan Helmus <jjhelmus@gmail.com>
+Date: Thu, 18 Jan 2018 12:52:39 -0500
+Subject: [PATCH] skip test_loss_of_precision_longcomplex test
+
+The precision of the system-provided arc function are often not very accurate
+on ppc64le for long complex/double.  Skip the relevent test.
+
+See: https://github.com/numpy/numpy/pull/8566
+---
+ numpy/core/tests/test_umath.py | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/numpy/core/tests/test_umath.py b/numpy/core/tests/test_umath.py
+index 7a2fa4b..54edac0 100644
+--- a/numpy/core/tests/test_umath.py
++++ b/numpy/core/tests/test_umath.py
+@@ -2378,9 +2378,9 @@ class TestComplexFunctions(object):
+         for dtype in [np.complex64, np.complex_]:
+             yield self.check_loss_of_precision, dtype
+ 
+-    @dec.knownfailureif(is_longdouble_finfo_bogus(), "Bogus long double finfo")
+-    def test_loss_of_precision_longcomplex(self):
+-        self.check_loss_of_precision(np.longcomplex)
++    #@dec.knownfailureif(is_longdouble_finfo_bogus(), "Bogus long double finfo")
++    #def test_loss_of_precision_longcomplex(self):
++    #    self.check_loss_of_precision(np.longcomplex)
+ 
+ 
+ class TestAttributes(TestCase):
+-- 
+1.8.3.1
+
