@@ -50,6 +50,7 @@ test:
     - nomkl  # [x86 and blas_impl != 'mkl']
   commands:
     - f2py -h
+    - python -c "import numpy; numpy.show_config()"
     - conda inspect linkages -p $PREFIX numpy  # [not win]
     - conda inspect objects -p $PREFIX numpy  # [osx]
   imports:
