@@ -1,22 +1,24 @@
+{% set name = "numpy" %}
 {% set version = "1.14.0" %}
-{% set commit = "6914bb41f0fb3c1ba500bae4e7d671da9536786f" %}
+{% set sha256 = "3de643935b212307b420248018323a44ec51987a336d1d747c1322afc3c099fb" %}
 
 package:
   name: numpy
   version: {{ version }}
 
 source:
-  git_url: https://github.com/numpy/numpy
-  git_tag: {{ commit }}
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.zip
+  sha256: {{ sha256 }}
   patches:
     - 0001-use-mklfft-when-available.patch
     - 0002-simplify-arch-flags.patch
     - 0003-use-gfortran-from-env-variable.patch
     - 0004-fix-windows-case-sensitivity.patch   # [win]
-    - 0005-intel-init-mkl.patch                 # [blas_impl == 'mkl']
+    - 0005-intel-init-mkl.patch                 # [blas_impl == 'mkl' and vc>=14]
+    - 0006-disable-memmap-filename-test-due-to-CI-link-confusio.patch  # [win]
 
 build:
-  number: 0
+  number: 1
   skip: True  # [blas_impl == 'openblas' and win]
   # conda 4.4+ can use this
   requires_features:
