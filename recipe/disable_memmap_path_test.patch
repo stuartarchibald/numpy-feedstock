@@ -1,0 +1,24 @@
+diff --git a/numpy/core/tests/test_memmap.py b/numpy/core/tests/test_memmap.py
+index d69f2b5..aa8500a 100644
+--- a/numpy/core/tests/test_memmap.py
++++ b/numpy/core/tests/test_memmap.py
+@@ -79,19 +79,6 @@ class TestMemmap(TestCase):
+         del b
+         del fp
+ 
+-    @dec.skipif(Path is None, "No pathlib.Path")
+-    def test_path(self):
+-        tmpname = mktemp('', 'mmap', dir=self.tempdir)
+-        fp = memmap(Path(tmpname), dtype=self.dtype, mode='w+',
+-                       shape=self.shape)
+-        abspath = os.path.realpath(os.path.abspath(tmpname))
+-        fp[:] = self.data[:]
+-        self.assertEqual(abspath.lower(), str(fp.filename.resolve()).lower())
+-        b = fp[:1]
+-        self.assertEqual(abspath.lower(), str(b.filename.resolve()).lower())
+-        del b
+-        del fp
+-
+     def test_filename_fileobj(self):
+         fp = memmap(self.tmpfp, dtype=self.dtype, mode="w+",
+                     shape=self.shape)
