@@ -15,6 +15,6 @@ if [[ ${HOST} =~ .*darwin.* ]]; then
     export LDFLAGS="${LDFLAGS} -undefined dynamic_lookup"
 fi
 
-$PYTHON setup.py config
-$PYTHON setup.py build # -j ${CPU_COUNT}
-$PYTHON setup.py install --single-version-externally-managed --record=record.txt
+# $PYTHON setup.py config
+# $PYTHON setup.py build
+$PYTHON -m pip install --no-deps --ignore-installed .
