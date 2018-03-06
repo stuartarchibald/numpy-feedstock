@@ -10,8 +10,22 @@ source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.zip
   sha256: {{ sha256 }}
   patches:
-    - mklfft.patch
-    - osx-dist.patch
+    # patches for MKL based enhancements
+    - intel_mkl-version.patch # [not nomkl]
+    - intel_use_mkl_fft.patch # [not nomkl]
+    - intel_distribution.patch        # [not nomkl]
+    - intel_umath_optimizations.patch # [not nomkl]
+    - intel_mkl_mem_all.patch         # [not nomkl]
+    - intel_init_mkl.patch            # [blas_impl == 'mkl' and (not win or vc>=14)]
+    - intel_mkl_random.patch          # [not nomkl]
+    # patch up MKL patches
+    - 0001-Remove-ICC-specific-flags.patch # [not nomkl]
+    - 0002-Remove-np.invsqrt.patch         # [not nomkl]
+    - 0003-Rewrite-inlining.patch          # [not nomkl]
+
+    # patch sequence switched as it is easier to apply smaller patches than
+    # larger ones to the changes above!
+    - osx-dist.patch # [osx]
     # customize gfortran executable that gets looked for to use our GFORTRAN env var
     - gfortran_alias.patch
     # Windows and its stupid long integer stuff breaks this test.  Just kill it.
@@ -20,7 +34,6 @@ source:
     - windows_case_sensitivity.patch   # [win]
     # precision issue with longdouble on ppc64le
     - 0001-skip-test_loss_of_precision_longcomplex-test.patch  # [ppc64le]
-    - 0005-intel-init-mkl.patch                 # [blas_impl == 'mkl' and (not win or vc>=14)]
     - disable_memmap_path_test.patch            # [win64 and py3k]
 
 build:
@@ -46,9 +59,14 @@ requirements:
   run:
     - python
     # openblas or mkl runtime included with run_exports
+    - mkl_fft # [blas_impl == 'mkl']
+    - mkl_random # [blas_impl == 'mkl']
 
 test:
+  files:
+    - run_np_tests.py
   requires:
+    - faulthandler # [py27]
     - nose
     - {{ compiler('c') }}
     - {{ compiler('fortran') }}
