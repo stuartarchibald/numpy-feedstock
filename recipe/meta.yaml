@@ -10,7 +10,6 @@ source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.zip
   sha256: {{ sha256 }}
   patches:
-    - mklfft.patch
     - osx-dist.patch
     # customize gfortran executable that gets looked for to use our GFORTRAN env var
     - gfortran_alias.patch
@@ -22,6 +21,8 @@ source:
     - 0001-skip-test_loss_of_precision_longcomplex-test.patch  # [ppc64le]
     - 0005-intel-init-mkl.patch                 # [blas_impl == 'mkl' and (not win or vc>=14)]
     - disable_memmap_path_test.patch            # [win64 and py3k]
+    - intel_mkl-version.patch         # [not nomkl]
+    - intel_use_mkl_fft.patch         # [not nomkl]
 
 build:
   number: 3
@@ -46,9 +47,13 @@ requirements:
   run:
     - python
     # openblas or mkl runtime included with run_exports
+    - mkl_fft # [blas_impl == 'mkl']
 
 test:
+  files:
+    - run_np_tests.py
   requires:
+    - faulthandler # [py27]
     - nose
     - {{ compiler('c') }}
     - {{ compiler('fortran') }}
