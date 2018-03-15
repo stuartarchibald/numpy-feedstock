@@ -1,4 +1,4 @@
-From ec49dcf7bf7448db7751116e9f39415b11776bd3 Mon Sep 17 00:00:00 2001
+From 101bf875604b7acde1414576107c098558cfae16 Mon Sep 17 00:00:00 2001
 From: Stuart Archibald <redacted>
 Date: Tue, 13 Mar 2018 23:16:48 +0000
 Subject: [PATCH 3/3] Rewrite inlining
@@ -7,9 +7,9 @@ This rewrites inlining of the allocators to work with GCC and defines
 __assume_aligned for GCC
 ---
  numpy/core/src/mkl_defs/aligned_alloc.c | 135 +++-----------------------------
- numpy/core/src/mkl_defs/aligned_alloc.h |  99 +++++++++++++++++++++--
+ numpy/core/src/mkl_defs/aligned_alloc.h |  98 +++++++++++++++++++++--
  numpy/core/src/umath/loops.c.src        |   6 ++
- 3 files changed, 107 insertions(+), 133 deletions(-)
+ 3 files changed, 106 insertions(+), 133 deletions(-)
 
 diff --git a/numpy/core/src/mkl_defs/aligned_alloc.c b/numpy/core/src/mkl_defs/aligned_alloc.c
 index 667432d..0160b43 100644
@@ -170,10 +170,10 @@ index 667432d..0160b43 100644
 -    }
 -}
 diff --git a/numpy/core/src/mkl_defs/aligned_alloc.h b/numpy/core/src/mkl_defs/aligned_alloc.h
-index edd0080..9165320 100644
+index edd0080..ba19bfe 100644
 --- a/numpy/core/src/mkl_defs/aligned_alloc.h
 +++ b/numpy/core/src/mkl_defs/aligned_alloc.h
-@@ -1,11 +1,96 @@
+@@ -1,11 +1,95 @@
 +// Not on windows
  #if !defined(ALIGNED_ALLOC_H) && !defined(_MSC_VER)
  #   define ALIGNED_ALLOC_H
@@ -189,7 +189,6 @@ index edd0080..9165320 100644
 +#   include "Python.h"
 +#endif
 +
-+#include <features.h>
 +#include <stdlib.h>
 +#include <stddef.h>
 +
