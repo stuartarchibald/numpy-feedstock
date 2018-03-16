@@ -1,10 +1,10 @@
-From e0bf74f5abdcd576c16b480466e0867a880f717f Mon Sep 17 00:00:00 2001
-From: Stuart Archibald <redacted>
+From f03989d0fcf44ee3225a87d9f5ddf97cbc61234e Mon Sep 17 00:00:00 2001
+From: Stuart Archibald <sarchibald@anaconda.com>
 Date: Tue, 13 Mar 2018 16:05:54 +0000
 Subject: [PATCH 2/3] Remove np.invsqrt
 
 This removes the np.invsqrt function for which there is no definition
-in math.h to act as a default implementation.
+in math.h to act as a default implemenation.
 ---
  numpy/core/code_generators/generate_umath.py   |  9 --------
  numpy/core/code_generators/ufunc_docstrings.py | 30 --------------------------
