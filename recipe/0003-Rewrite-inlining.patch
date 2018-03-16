@@ -1,18 +1,18 @@
-From 101bf875604b7acde1414576107c098558cfae16 Mon Sep 17 00:00:00 2001
-From: Stuart Archibald <redacted>
+From ceee9542e78261cf996abc558f6eb10688bd76c5 Mon Sep 17 00:00:00 2001
+From: Stuart Archibald <sarchibald@anaconda.com>
 Date: Tue, 13 Mar 2018 23:16:48 +0000
 Subject: [PATCH 3/3] Rewrite inlining
 
 This rewrites inlining of the allocators to work with GCC and defines
 __assume_aligned for GCC
 ---
- numpy/core/src/mkl_defs/aligned_alloc.c | 135 +++-----------------------------
- numpy/core/src/mkl_defs/aligned_alloc.h |  98 +++++++++++++++++++++--
+ numpy/core/src/mkl_defs/aligned_alloc.c | 139 +++-----------------------------
+ numpy/core/src/mkl_defs/aligned_alloc.h |  98 ++++++++++++++++++++--
  numpy/core/src/umath/loops.c.src        |   6 ++
- 3 files changed, 106 insertions(+), 133 deletions(-)
+ 3 files changed, 109 insertions(+), 134 deletions(-)
 
 diff --git a/numpy/core/src/mkl_defs/aligned_alloc.c b/numpy/core/src/mkl_defs/aligned_alloc.c
-index 667432d..0160b43 100644
+index 667432d..37eb172 100644
 --- a/numpy/core/src/mkl_defs/aligned_alloc.c
 +++ b/numpy/core/src/mkl_defs/aligned_alloc.c
 @@ -1,19 +1,6 @@
@@ -30,9 +30,10 @@ index 667432d..0160b43 100644
 -#define __NULL_STRIDE 0
 -#define __8BYTES_ALIGNMENT_OFFSET(ptr) (((size_t) (ptr)) & 0x7)
 -#define MKL_INT_MAX ((size_t) (~((MKL_UINT) 0) >> 1))
-+#include "aligned_alloc.h"
- 
+-
 -static int is_tbb_enabled(void) {
++#include "aligned_alloc.h"
++#if !defined(_MSC_VER)
 +int is_tbb_enabled(void) {
      static int TBB_ENABLED = -1;
      if (TBB_ENABLED == -1) {
@@ -109,7 +110,7 @@ index 667432d..0160b43 100644
      static int TRACEMALLOC_PRESENT = -1;
      if (TRACEMALLOC_PRESENT == -1) {
          TRACEMALLOC_PRESENT = (getenv("PYTHONTRACEMALLOC")) ? 1 : 0;
-@@ -94,53 +20,10 @@ static int is_tracemalloc_enabled(void) {
+@@ -94,53 +20,12 @@ static int is_tracemalloc_enabled(void) {
  }
  #endif
  
@@ -158,6 +159,8 @@ index 667432d..0160b43 100644
 +extern void* call_aligned_calloc(size_t, size_t);
 +extern void* call_aligned_realloc(void*, size_t);
 +extern void call_free(void*);
++#endif // !defined(_MSC_VER)
++static int _prevent_empty_translation_unit;
  
 -inline void call_free(void* ptr) {
 -#if PY_VERSION_HEX >= 0x03040000
