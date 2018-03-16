@@ -1,4 +1,4 @@
-From ceee9542e78261cf996abc558f6eb10688bd76c5 Mon Sep 17 00:00:00 2001
+From cf0e087ffabf8e7279870e432b6cf184c71939c4 Mon Sep 17 00:00:00 2001
 From: Stuart Archibald <sarchibald@anaconda.com>
 Date: Tue, 13 Mar 2018 23:16:48 +0000
 Subject: [PATCH 3/3] Rewrite inlining
@@ -8,8 +8,8 @@ __assume_aligned for GCC
 ---
  numpy/core/src/mkl_defs/aligned_alloc.c | 139 +++-----------------------------
  numpy/core/src/mkl_defs/aligned_alloc.h |  98 ++++++++++++++++++++--
- numpy/core/src/umath/loops.c.src        |   6 ++
- 3 files changed, 109 insertions(+), 134 deletions(-)
+ numpy/core/src/umath/loops.c.src        |   9 +++
+ 3 files changed, 112 insertions(+), 134 deletions(-)
 
 diff --git a/numpy/core/src/mkl_defs/aligned_alloc.c b/numpy/core/src/mkl_defs/aligned_alloc.c
 index 667432d..37eb172 100644
@@ -280,10 +280,10 @@ index edd0080..ba19bfe 100644
 +#   define PyArray_realloc call_aligned_realloc
  #endif
 diff --git a/numpy/core/src/umath/loops.c.src b/numpy/core/src/umath/loops.c.src
-index c5b897f..4d64ab4 100644
+index c5b897f..476377b 100644
 --- a/numpy/core/src/umath/loops.c.src
 +++ b/numpy/core/src/umath/loops.c.src
-@@ -35,6 +35,12 @@
+@@ -35,6 +35,15 @@
  #define VML_ASM_THRESHOLD 100000
  #define VML_D_THRESHOLD 8000
  
@@ -291,6 +291,9 @@ index c5b897f..4d64ab4 100644
 +#ifndef _MSC_VER
 +#define __assume_aligned(var, align) (var=(__typeof__(var))\
 +    __builtin_assume_aligned((void *)var, align));
++#else
++// and hide it on windows
++#define __assume_aligned(var, align)
 +#endif
 +
  #define MKL_INT_MAX ((npy_intp) ((~((MKL_UINT) 0)) >> 1))
