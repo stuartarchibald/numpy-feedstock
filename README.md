@@ -9,19 +9,22 @@ Feedstock license: BSD 3-Clause
 
 Summary: Array processing for numbers, strings, records, and objects.
 
+NumPy is the fundamental package needed for scientific computing with Python.
 
 
 Current build status
 ====================
 
-Linux: [![Circle CI](https://circleci.com/gh/conda-forge/numpy-feedstock.svg?style=shield)](https://circleci.com/gh/conda-forge/numpy-feedstock)
-OSX: [![TravisCI](https://travis-ci.org/conda-forge/numpy-feedstock.svg?branch=master)](https://travis-ci.org/conda-forge/numpy-feedstock)
-Windows: [![AppVeyor](https://ci.appveyor.com/api/projects/status/github/conda-forge/numpy-feedstock?svg=True)](https://ci.appveyor.com/project/conda-forge/numpy-feedstock/branch/master)
+[![Linux](https://img.shields.io/circleci/project/github/conda-forge/numpy-feedstock/master.svg?label=Linux)](https://circleci.com/gh/conda-forge/numpy-feedstock)
+[![OSX](https://img.shields.io/travis/conda-forge/numpy-feedstock/master.svg?label=macOS)](https://travis-ci.org/conda-forge/numpy-feedstock)
+![Windows disabled](https://img.shields.io/badge/Windows-disabled-lightgrey.svg)
 
 Current release info
 ====================
-Version: [![Anaconda-Server Badge](https://anaconda.org/conda-forge/numpy/badges/version.svg)](https://anaconda.org/conda-forge/numpy)
-Downloads: [![Anaconda-Server Badge](https://anaconda.org/conda-forge/numpy/badges/downloads.svg)](https://anaconda.org/conda-forge/numpy)
+
+| Name | Downloads | Version | Platforms |
+| --- | --- | --- | --- |
+| [![Conda Recipe](https://img.shields.io/badge/recipe-numpy-green.svg)](https://anaconda.org/conda-forge/numpy) | [![Conda Downloads](https://img.shields.io/conda/dn/conda-forge/numpy.svg)](https://anaconda.org/conda-forge/numpy) | [![Conda Version](https://img.shields.io/conda/vn/conda-forge/numpy.svg)](https://anaconda.org/conda-forge/numpy) | [![Conda Platforms](https://img.shields.io/conda/pn/conda-forge/numpy.svg)](https://anaconda.org/conda-forge/numpy) |
 
 Installing numpy
 ================
