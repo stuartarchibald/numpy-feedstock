@@ -1,0 +1,61 @@
+From 4c898978b5f368587f5d9e27a75ff30f03e0c4db Mon Sep 17 00:00:00 2001
+From: Ray Donnelly <mingw.android@gmail.com>
+Date: Fri, 27 Apr 2018 13:03:42 -0700
+Subject: [PATCH 02/14] intel: use mkl_fft
+
+---
+ numpy/fft/__init__.py | 41 +++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 41 insertions(+)
+
+diff --git a/numpy/fft/__init__.py b/numpy/fft/__init__.py
+index 72d61a7..e3ce7aa 100644
+--- a/numpy/fft/__init__.py
++++ b/numpy/fft/__init__.py
+@@ -9,3 +9,44 @@ from .helper import *
+ from numpy.testing import _numpy_tester
+ test = _numpy_tester().test
+ bench = _numpy_tester().bench
++
++try:
++    import mkl_fft._numpy_fft as _nfft
++    patch_fft = True
++    __patched_functions__ = _nfft.__all__
++except ImportError:
++    patch_fft = False
++
++if patch_fft:
++    _restore_dict = {}
++    import sys
++
++    def register_func(name, func):
++        if name not in __patched_functions__:
++            raise ValueError("%s not an mkl_fft function." % name)
++        f = sys._getframe(0).f_globals
++        _restore_dict[name] = f[name]
++        f[name] = func
++
++    def restore_func(name):
++        if name not in __patched_functions__:
++            raise ValueError("%s not an mkl_fft function." % name)
++        try:
++            val = _restore_dict[name]
++        except KeyError:
++            print('failed to restore')
++            return
++        else:
++            print('found and restoring...')
++            sys._getframe(0).f_globals[name] = val
++
++    def restore_all():
++        for name in _restore_dict.keys():
++            restore_func(name)
++
++    for f in __patched_functions__:
++        register_func(f, getattr(_nfft, f))
++    del _nfft
++
++del patch_fft
++
+-- 
+1.9.5 (Apple Git-50.3)
+
