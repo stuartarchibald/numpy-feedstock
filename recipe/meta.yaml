@@ -1,31 +1,44 @@
 {% set name = "numpy" %}
-{% set version = "1.14.0" %}
-{% set sha256 = "3de643935b212307b420248018323a44ec51987a336d1d747c1322afc3c099fb" %}
+{% set version = "1.14.3" %}
+# {% set sha256 = "3de643935b212307b420248018323a44ec51987a336d1d747c1322afc3c099fb" %}
 
 package:
   name: numpy
   version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.zip
-  sha256: {{ sha256 }}
+  # Releases contain stale files (mtrand.c for example), see:
+  # https://github.com/numpy/numpy/issues/9391
+  # url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.zip
+  # sha256: {{ sha256 }}
+  # .. so build from the git source instead:
+  git_url: https://github.com/numpy/numpy
+  git_tag: v{{ version }}
   patches:
-    - 0001-use-mklfft-when-available.patch
-    - 0002-simplify-arch-flags.patch
-    - 0003-use-gfortran-from-env-variable.patch
-    - 0004-fix-windows-case-sensitivity.patch   # [win]
-    - 0005-intel-init-mkl.patch                 # [blas_impl == 'mkl' and vc>=14]
-    - 0006-disable-memmap-filename-test-due-to-CI-link-confusio.patch  # [win]
+    # patches for MKL based enhancements
+    - 0001-intel_mkl-version.patch                                     # [blas_impl == 'mkl' and (not win or vc>=14)]
+    - 0002-intel-use-mkl_fft.patch                                     # [blas_impl == 'mkl' and (not win or vc>=14)]
+    - 0003-intel-distribution.patch                                    # [blas_impl == 'mkl' and (not win or vc>=14)]
+    - 0004-intel-umath-optimizations.patch                             # [blas_impl == 'mkl' and (not win or vc>=14)]
+    - 0005-intel-mkl_mem-all.patch                                     # [blas_impl == 'mkl' and (not win or vc>=14)]
+    - 0006-intel-init_mkl.patch                                        # [blas_impl == 'mkl' and (not win or vc>=14)]
+    - 0007-intel-mkl_random.patch                                      # [blas_impl == 'mkl' and (not win or vc>=14)]
+    # patch up MKL patches
+    - 0008-Remove-ICC-specific-flags.patch                             # [blas_impl == 'mkl' and (not win or vc>=14)]
+    - 0009-Remove-np.invsqrt.patch                                     # [blas_impl == 'mkl' and (not win or vc>=14)]
+    - 0010-Rewrite-inlining.patch                                      # [blas_impl == 'mkl' and (not win or vc>=14)]
+    # patch sequence switched as it is easier to apply smaller patches than
+    # larger ones to the changes above!
+    - 0011-simplify-arch-flags.patch                                   # [osx]
+    # customize gfortran executable that gets looked for to use our GFORTRAN env var
+    - 0012-Obtain-and-prefer-custom-gfortran-from-env-var.patch
+    # Seems to be an issue with case sensitivity and Windows filesystem permission errors.
+    - 0013-fix-windows-case-sensitivity.patch                          # [win]
+    - 0014-disable-memmap-filename-test-due-to-CI-link-confusio.patch  # [win]
 
 build:
-  number: 1
+  number: 0
   skip: True  # [blas_impl == 'openblas' and win]
-  # conda 4.4+ can use this
-  requires_features:
-    blas: {{ blas_impl }}
-  # this is for conda 4.3 and below
-  features:
-    - nomkl    # [x86 and blas_impl != 'mkl']
 
 requirements:
   build:
