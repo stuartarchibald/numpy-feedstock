@@ -691,16 +691,5 @@ index f321d6a..b4f589f 100644
  
          return Py_BuildValue("{s:i,s:i}","zungqr_",lapack_lite_status,
                               "info",info);
-diff --git a/numpy/ma/bench.py b/numpy/ma/bench.py
-index b861970..27cc6e7 100644
---- a/numpy/ma/bench.py
-+++ b/numpy/ma/bench.py
-@@ -1,4 +1,5 @@
- #! /usr/bin/env python
-+# -*- coding: utf-8 -*-
- from __future__ import division, print_function
- 
- import timeit
--- 
 1.9.5 (Apple Git-50.3)
 

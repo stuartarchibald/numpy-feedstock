@@ -30,4 +30,4 @@ echo include_dirs = %LIBRARY_INC%
 python setup.py install --single-version-externally-managed --record=record.txt
 if errorlevel 1 exit 1
 
-COPY f2py.bat %PREFIX%\Scripts
+COPY %RECIPE_DIR%\f2py.bat %PREFIX%\Scripts
