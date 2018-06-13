@@ -1,6 +1,6 @@
 {% set name = "numpy" %}
-{% set version = "1.14.3" %}
-# {% set sha256 = "facc6f925c3099ac01a1f03758100772560a0b020fb9d70f210404be08006bcb" %}
+{% set version = "1.14.4" %}
+# {% set sha256 = "2185a0f31ecaa0792264fa968c8e0ba6d96acf144b26e2e1d1cd5b77fc11a691" %}
 
 package:
   name: numpy_and_dev
@@ -15,26 +15,24 @@ source:
   git_url: https://github.com/numpy/numpy
   git_tag: v{{ version }}
   patches:
+    - 0001-fix-windows-case-sensitivity.patch
+    - 0002-simplify-arch-flags.patch
+    - 0003-Obtain-and-prefer-custom-gfortran-from-env-variable.patch
+    - 0004-disable-memmap-filename-test-due-to-CI-link-confusio.patch
+    - 0005-disable-broken-tests.patch
+    {% if blas_impl == "mkl" and (not win or vc|int >= 14) -%}
     # patches for MKL based enhancements
-    - 0001-intel_mkl-version.patch                                     # [blas_impl == 'mkl' and (not win or vc>=14)]
-    - 0002-intel-use-mkl_fft.patch                                     # [blas_impl == 'mkl' and (not win or vc>=14)]
-    - 0003-intel-distribution.patch                                    # [blas_impl == 'mkl' and (not win or vc>=14)]
-    - 0004-intel-umath-optimizations.patch                             # [blas_impl == 'mkl' and (not win or vc>=14)]
-    - 0005-intel-mkl_mem-all.patch                                     # [blas_impl == 'mkl' and (not win or vc>=14)]
-    - 0006-intel-init_mkl.patch                                        # [blas_impl == 'mkl' and (not win or vc>=14)]
-    - 0007-intel-mkl_random.patch                                      # [blas_impl == 'mkl' and (not win or vc>=14)]
+    - 0006-use-mklfft-when-available.patch
+    - 0007-define-mkl_version-in-__init__.py.patch
+    - 0008-intel-umath-optimizations.patch
+    - 0009-intel-mkl_mem-all.patch
+    - 0010-intel-init_mkl.patch
+    - 0011-intel-mkl_random.patch
     # patch up MKL patches
-    - 0008-Remove-ICC-specific-flags.patch                             # [blas_impl == 'mkl' and (not win or vc>=14)]
-    - 0009-Remove-np.invsqrt.patch                                     # [blas_impl == 'mkl' and (not win or vc>=14)]
-    - 0010-Rewrite-inlining.patch                                      # [blas_impl == 'mkl' and (not win or vc>=14)]
-    # patch sequence switched as it is easier to apply smaller patches than
-    # larger ones to the changes above!
-    - 0011-simplify-arch-flags.patch                                   # [osx]
-    # customize gfortran executable that gets looked for to use our GFORTRAN env var
-    - 0012-Obtain-and-prefer-custom-gfortran-from-env-var.patch
-    # Seems to be an issue with case sensitivity and Windows filesystem permission errors.
-    - 0013-fix-windows-case-sensitivity.patch                          # [win]
-    - 0014-disable-memmap-filename-test-due-to-CI-link-confusio.patch  # [win]
+    - 0012-Remove-ICC-specific-flags.patch
+    - 0013-Remove-np.invsqrt.patch
+    - 0014-Rewrite-inlining.patch
+    {%- endif %}
 
 build:
   number: 0
@@ -45,18 +43,20 @@ build:
 outputs:
   # this one has all the actual contents
   - name: numpy-base
-    script: install_base.sh   # [unix]
-    script: install_base.bat  # [win]
+    script: setup_base.sh   # [unix]
+    script: setup_base.bat  # [win]
     requirements:
       build:
-        - {{ compiler('c') }}
-        - {{ compiler('fortran') }}
+        - {{ compiler("c") }}
+        - {{ compiler("fortran") }}
+        # HACK: need this for libquadmath.  Should fix the gcc package
+        - libgcc-ng                  # [linux]
       host:
         - cython
         - python
         - setuptools
-        - mkl-devel  {{ mkl }}  # [blas_impl == 'mkl']
-        - openblas-devel {{ openblas }}  # [blas_impl == 'openblas']
+        - mkl-devel  {{ mkl }}  # [blas_impl == "mkl"]
+        - openblas-devel {{ openblas }}  # [blas_impl == "openblas"]
       run:
         - python
 
@@ -86,12 +86,13 @@ outputs:
         - python
       run:
         - python
-        - {{ pin_subpackage('numpy-base') }}
+        - {{ pin_subpackage('numpy-base', exact=True) }}
         # openblas or mkl runtime included with run_exports
         - mkl_fft # [blas_impl == 'mkl']
         - mkl_random # [blas_impl == 'mkl' and (not win or vc>=14)]
 
     test:
+      script: numpy_test.py
       requires:
         - nose
         - {{ compiler('c') }}

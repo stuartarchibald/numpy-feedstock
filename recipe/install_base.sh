@@ -37,6 +37,9 @@ fi
 
 if [[ $(uname) == 'Darwin' ]]; then
     export LDFLAGS="$LDFLAGS -undefined dynamic_lookup"
+else
+    export LDFLAGS="$LDFLAGS -shared"
+    export FFLAGS="$FFLAGS -Wl,-shared"
 fi
 
 $PYTHON setup.py config
