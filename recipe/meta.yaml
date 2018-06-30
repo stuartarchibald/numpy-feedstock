@@ -35,7 +35,7 @@ source:
     {%- endif %}
 
 build:
-  number: 0
+  number: 1
   skip: True  # [blas_impl == 'openblas' and win]
   force_use_keys:
     - python
@@ -43,8 +43,8 @@ build:
 outputs:
   # this one has all the actual contents
   - name: numpy-base
-    script: setup_base.sh   # [unix]
-    script: setup_base.bat  # [win]
+    script: install_base.sh   # [unix]
+    script: install_base.bat  # [win]
     requirements:
       build:
         - {{ compiler("c") }}
