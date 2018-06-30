@@ -68,7 +68,7 @@ outputs:
     requirements:
       host:
         - python
-        - {{ pin_subpackage('numpy-base', exact=True) }}
+        # these import blas metapackages to ensure consistency with downstream libs that also use blas
         - mkl-devel  {{ mkl }}  # [blas_impl == 'mkl']
         - openblas-devel {{ openblas }}  # [blas_impl == 'openblas']
       run:
