@@ -1,4 +1,4 @@
-From 58c6449ea41087314a79b1be9dc9fbbe9a1161a3 Mon Sep 17 00:00:00 2001
+From 71c94b695b29512335102c6de868c47446084f60 Mon Sep 17 00:00:00 2001
 From: Michael Sarahan <msarahan@gmail.com>
 Date: Tue, 12 Jun 2018 09:54:13 -0500
 Subject: [PATCH 05/14] disable broken tests
@@ -11,10 +11,10 @@ MKL messes up this error state, and these tests don't work.
  3 files changed, 29 deletions(-)
 
 diff --git a/numpy/core/tests/test_einsum.py b/numpy/core/tests/test_einsum.py
-index f4ab5e238..99e66d716 100644
+index 8ce374a75..3be17900c 100644
 --- a/numpy/core/tests/test_einsum.py
 +++ b/numpy/core/tests/test_einsum.py
-@@ -514,9 +514,6 @@ class TestEinSum(object):
+@@ -526,9 +526,6 @@ class TestEinsum(object):
      def test_einsum_sums_uint8(self):
          self.check_einsum_sums('u1')
  
@@ -25,14 +25,14 @@ index f4ab5e238..99e66d716 100644
          self.check_einsum_sums('u2')
  
 diff --git a/numpy/core/tests/test_errstate.py b/numpy/core/tests/test_errstate.py
-index ae06af7fd..3882eff0b 100644
+index 4f6111921..0b7a528c2 100644
 --- a/numpy/core/tests/test_errstate.py
 +++ b/numpy/core/tests/test_errstate.py
-@@ -7,21 +7,6 @@ from numpy.testing import assert_, run_module_suite, dec
+@@ -8,21 +8,6 @@ from numpy.testing import assert_
  
  
  class TestErrstate(object):
--    @dec.skipif(platform.machine() == "armv5tel", "See gh-413.")
+-    @pytest.mark.skipif(platform.machine() == "armv5tel", reason="See gh-413.")
 -    def test_invalid(self):
 -        with np.errstate(all='raise', under='ignore'):
 -            a = -np.arange(3)
@@ -51,10 +51,10 @@ index ae06af7fd..3882eff0b 100644
          with np.errstate(all='raise', under='ignore'):
              a = -np.arange(3)
 diff --git a/numpy/core/tests/test_umath.py b/numpy/core/tests/test_umath.py
-index edb112575..c6ade9e27 100644
+index 4772913be..eb6555451 100644
 --- a/numpy/core/tests/test_umath.py
 +++ b/numpy/core/tests/test_umath.py
-@@ -1327,17 +1327,6 @@ class TestMinMax(object):
+@@ -1328,17 +1328,6 @@ class TestMinMax(object):
          assert_equal(d.max(), d[0])
          assert_equal(d.min(), d[0])
  
@@ -73,5 +73,5 @@ index edb112575..c6ade9e27 100644
  class TestAbsoluteNegative(object):
      def test_abs_neg_blocked(self):
 -- 
-2.11.1
+2.17.1
 

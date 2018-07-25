@@ -1,4 +1,4 @@
-From 3b280635c55825d9618f8f6048402002e35c4306 Mon Sep 17 00:00:00 2001
+From a1b527c446dfdd28aaff931393a05b98ab471075 Mon Sep 17 00:00:00 2001
 From: Michael Sarahan <msarahan@gmail.com>
 Date: Mon, 11 Jun 2018 16:37:27 -0500
 Subject: [PATCH 01/14] fix windows case sensitivity
@@ -8,7 +8,7 @@ Subject: [PATCH 01/14] fix windows case sensitivity
  1 file changed, 9 insertions(+), 6 deletions(-)
 
 diff --git a/numpy/core/tests/test_memmap.py b/numpy/core/tests/test_memmap.py
-index 1cd09ab21..91a032017 100644
+index 59ca28324..5984750ce 100644
 --- a/numpy/core/tests/test_memmap.py
 +++ b/numpy/core/tests/test_memmap.py
 @@ -27,7 +27,10 @@ class TestMemmap(object):
@@ -51,5 +51,5 @@ index 1cd09ab21..91a032017 100644
          del fp
  
 -- 
-2.11.1
+2.17.1
 
