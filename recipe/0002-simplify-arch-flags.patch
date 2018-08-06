@@ -1,4 +1,4 @@
-From 5e1775e55d89c518b19b0921db6fe029a00b4911 Mon Sep 17 00:00:00 2001
+From 59a5992d57177ad55ac97bf49541da9c604f0e69 Mon Sep 17 00:00:00 2001
 From: Michael Sarahan <msarahan@gmail.com>
 Date: Mon, 11 Jun 2018 16:36:07 -0500
 Subject: [PATCH 02/14] simplify arch flags
@@ -34,5 +34,5 @@ index 0ebbe79dc..56e9be546 100644
      def get_flags(self):
          flags = GnuFCompiler.get_flags(self)
 -- 
-2.11.1
+2.17.1
 

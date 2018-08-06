@@ -1,20 +1,21 @@
-From a71c596fd2d49e58bdbc2e312c0e9abad950de69 Mon Sep 17 00:00:00 2001
+From aa8592305e55e8deb1079714a253ad563b018e71 Mon Sep 17 00:00:00 2001
 From: Michael Sarahan <msarahan@gmail.com>
-Date: Mon, 11 Jun 2018 16:30:08 -0500
+Date: Thu, 26 Jul 2018 11:23:44 -0500
 Subject: [PATCH 06/14] use mklfft when available
 
 ---
- numpy/fft/__init__.py | 44 ++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 44 insertions(+)
+ numpy/fft/__init__.py | 41 +++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 41 insertions(+)
 
 diff --git a/numpy/fft/__init__.py b/numpy/fft/__init__.py
-index 72d61a728..73dc10eb6 100644
+index bbb6ec8c7..7658c2e25 100644
 --- a/numpy/fft/__init__.py
 +++ b/numpy/fft/__init__.py
-@@ -9,3 +9,47 @@ from .helper import *
- from numpy.testing import _numpy_tester
- test = _numpy_tester().test
- bench = _numpy_tester().bench
+@@ -9,3 +9,44 @@ from .helper import *
+ from numpy.testing._private.pytesttester import PytestTester
+ test = PytestTester(__name__)
+ del PytestTester
++
 +
 +try:
 +    import mkl_fft._numpy_fft as _nfft
@@ -53,12 +54,8 @@ index 72d61a728..73dc10eb6 100644
 +    for f in __patched_functions__:
 +        register_func(f, getattr(_nfft, f))
 +    del _nfft
-+    using_mklfft = True
-+else:
-+    using_mklfft = False
 +
 +del patch_fft
-+
 -- 
-2.11.1
+2.17.1
 

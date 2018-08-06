@@ -1,25 +1,25 @@
-From bce8e719138b95f95dd8cd23c5920dcd2166f47f Mon Sep 17 00:00:00 2001
+From ae726415f4c10188f308518653d5952b16db8dcb Mon Sep 17 00:00:00 2001
 From: Michael Sarahan <msarahan@gmail.com>
 Date: Tue, 12 Jun 2018 09:11:09 -0500
 Subject: [PATCH 13/14] Remove np.invsqrt
 
 ---
- numpy/core/code_generators/generate_umath.py   |  9 --------
- numpy/core/code_generators/ufunc_docstrings.py | 30 --------------------------
- numpy/core/include/numpy/npy_math.h            |  6 ------
- numpy/core/setup_common.py                     |  2 +-
- numpy/core/src/npymath/npy_math_complex.c.src  | 13 ++---------
- numpy/core/src/npymath/npy_math_internal.h.src | 17 ++-------------
- numpy/core/src/umath/funcs.inc.src             |  7 ------
- numpy/core/src/umath/loops.c.src               | 28 ------------------------
- numpy/core/src/umath/loops.h.src               |  2 +-
- 9 files changed, 6 insertions(+), 108 deletions(-)
+ numpy/core/code_generators/generate_umath.py  |  9 ------
+ .../core/code_generators/ufunc_docstrings.py  | 28 -------------------
+ numpy/core/include/numpy/npy_math.h           |  6 ----
+ numpy/core/setup_common.py                    |  2 +-
+ numpy/core/src/npymath/npy_math_complex.c.src | 13 ++-------
+ .../core/src/npymath/npy_math_internal.h.src  | 17 ++---------
+ numpy/core/src/umath/funcs.inc.src            |  7 -----
+ numpy/core/src/umath/loops.c.src              | 28 -------------------
+ numpy/core/src/umath/loops.h.src              |  2 +-
+ 9 files changed, 6 insertions(+), 106 deletions(-)
 
 diff --git a/numpy/core/code_generators/generate_umath.py b/numpy/core/code_generators/generate_umath.py
-index f280bdeb3..322ed6719 100644
+index 94b2a1371..ea52f3cfb 100644
 --- a/numpy/core/code_generators/generate_umath.py
 +++ b/numpy/core/code_generators/generate_umath.py
-@@ -771,15 +771,6 @@ defdict = {
+@@ -782,15 +782,6 @@ defdict = {
            TD(inexact, f='sqrt', astype={'e':'f'}),
            TD(P, f='sqrt'),
            ),
@@ -36,10 +36,10 @@ index f280bdeb3..322ed6719 100644
      Ufunc(1, 1, None,
            docstrings.get('numpy.core.umath.cbrt'),
 diff --git a/numpy/core/code_generators/ufunc_docstrings.py b/numpy/core/code_generators/ufunc_docstrings.py
-index e4f2297bd..3a3ae7d1f 100644
+index 39b882756..ece0b9cb2 100644
 --- a/numpy/core/code_generators/ufunc_docstrings.py
 +++ b/numpy/core/code_generators/ufunc_docstrings.py
-@@ -3386,36 +3386,6 @@ add_newdoc('numpy.core.umath', 'sqrt',
+@@ -3443,34 +3443,6 @@ add_newdoc('numpy.core.umath', 'sqrt',
  
      """)
  
@@ -51,9 +51,7 @@ index e4f2297bd..3a3ae7d1f 100644
 -    ----------
 -    x : array_like
 -        The values whose 1/square-roots are required.
--    out : ndarray, optional
--        Alternate array object in which to put the result; if provided, it
--        must have the same shape as `x`
+-    $PARAMS
 -
 -    Returns
 -    -------
@@ -64,7 +62,7 @@ index e4f2297bd..3a3ae7d1f 100644
 -        negative reals are calculated).  If all of the elements in `x`
 -        are real, so is `y`, with negative elements returning ``nan``.
 -        If `out` was provided, `y` is a reference to it.
--
+-        $OUT_SCALAR_1
 -
 -    Examples
 -    --------
@@ -77,7 +75,7 @@ index e4f2297bd..3a3ae7d1f 100644
      """
      Return the cube-root of an array, element-wise.
 diff --git a/numpy/core/include/numpy/npy_math.h b/numpy/core/include/numpy/npy_math.h
-index 3804f6c7f..370294dea 100644
+index 91ea82e08..dd4876d0b 100644
 --- a/numpy/core/include/numpy/npy_math.h
 +++ b/numpy/core/include/numpy/npy_math.h
 @@ -132,7 +132,6 @@ NPY_INPLACE double npy_log10(double x);
@@ -129,10 +127,10 @@ index 3804f6c7f..370294dea 100644
  npy_clongdouble npy_ccosl(npy_clongdouble z);
  npy_clongdouble npy_csinl(npy_clongdouble z);
 diff --git a/numpy/core/setup_common.py b/numpy/core/setup_common.py
-index d8ebea0b9..a8bb297ff 100644
+index 9f93b000b..7cb96802a 100644
 --- a/numpy/core/setup_common.py
 +++ b/numpy/core/setup_common.py
-@@ -106,7 +106,7 @@ MANDATORY_FUNCS = ["sin", "cos", "tan", "sinh", "cosh", "tanh", "fabs",
+@@ -107,7 +107,7 @@ MANDATORY_FUNCS = ["sin", "cos", "tan", "sinh", "cosh", "tanh", "fabs",
  # Standard functions which may not be available and for which we have a
  # replacement implementation. Note that some of these are C99 functions.
  OPTIONAL_STDFUNCS = ["expm1", "log1p", "acosh", "asinh", "atanh",
@@ -142,10 +140,10 @@ index d8ebea0b9..a8bb297ff 100644
          "strtoll", "strtoull", "cbrt", "strtold_l", "fallocate",
          "backtrace"]
 diff --git a/numpy/core/src/npymath/npy_math_complex.c.src b/numpy/core/src/npymath/npy_math_complex.c.src
-index 00adf230d..4463d2e0e 100644
+index e1de1e14a..d2fae299d 100644
 --- a/numpy/core/src/npymath/npy_math_complex.c.src
 +++ b/numpy/core/src/npymath/npy_math_complex.c.src
-@@ -449,15 +449,6 @@ npy_csqrt@c@(@ctype@ z)
+@@ -455,15 +455,6 @@ npy_csqrt@c@(@ctype@ z)
  #undef THRESH
  #endif
  
@@ -154,14 +152,14 @@ index 00adf230d..4463d2e0e 100644
 -@ctype@
 -npy_cinvsqrt@c@(@ctype@ z)
 -{
--    return cdiv@c@(c_1@c@, npy_csqrt@c@(z));
+-    return z;
 -}
 -#endif
 -
  /*
   * Always use this function because of the multiplication for small
   * integer powers, but in the body use cpow if it is available.
-@@ -1797,9 +1788,9 @@ npy_@kind@@c@(@ctype@ z)
+@@ -1807,9 +1798,9 @@ npy_@kind@@c@(@ctype@ z)
  /**end repeat1**/
  
  /**begin repeat1
@@ -174,7 +172,7 @@ index 00adf230d..4463d2e0e 100644
   */
  #ifdef HAVE_@KIND@@C@
 diff --git a/numpy/core/src/npymath/npy_math_internal.h.src b/numpy/core/src/npymath/npy_math_internal.h.src
-index c4b9ee17a..0c2c67489 100644
+index 6f919f1bc..127d3df04 100644
 --- a/numpy/core/src/npymath/npy_math_internal.h.src
 +++ b/numpy/core/src/npymath/npy_math_internal.h.src
 @@ -379,9 +379,9 @@ NPY_INPLACE double npy_log2(double x)
@@ -189,10 +187,11 @@ index c4b9ee17a..0c2c67489 100644
   *         LOG,ERF,EXP,EXPM1,ASIN,ACOS,ATAN,ASINH,ACOSH,ATANH,LOG1P,EXP2,LOG2#
   */
  
-@@ -473,19 +473,6 @@ NPY_INPLACE @type@ npy_@kind@@c@(@type@ x)
+@@ -472,19 +472,6 @@ NPY_INPLACE @type@ npy_@kind@@c@(@type@ x)
+ 
  /**end repeat1**/
  
- /**begin repeat1
+-/**begin repeat1
 - * #kind = invsqrt#
 - * #KIND = INVSQRT#
 - */
@@ -205,36 +204,39 @@ index c4b9ee17a..0c2c67489 100644
 -
 -/**end repeat1**/
 -
--/**begin repeat1
+ /**begin repeat1
   * #kind = atan2,hypot,pow,fmod,copysign#
   * #KIND = ATAN2,HYPOT,POW,FMOD,COPYSIGN#
-  */
 diff --git a/numpy/core/src/umath/funcs.inc.src b/numpy/core/src/umath/funcs.inc.src
-index 06b9b59cf..acd9d17da 100644
+index 45d80ce25..af2dca1bc 100644
 --- a/numpy/core/src/umath/funcs.inc.src
 +++ b/numpy/core/src/umath/funcs.inc.src
-@@ -203,13 +203,6 @@ nc_sqrt@c@(@ctype@ *x, @ctype@ *r)
+@@ -270,13 +270,6 @@ nc_sqrt@c@(@ctype@ *x, @ctype@ *r)
+     return;
  }
  
- static void
+-static void
 -nc_invsqrt@c@(@ctype@ *x, @ctype@ *r)
 -{
 -    *r = npy_cinvsqrt@c@(*x);
 -    return;
 -}
 -
--static void
+ static void
  nc_rint@c@(@ctype@ *x, @ctype@ *r)
  {
-     r->real = npy_rint@c@(x->real);
 diff --git a/numpy/core/src/umath/loops.c.src b/numpy/core/src/umath/loops.c.src
-index 9696872fe..eda085366 100644
+index 6305f55d2..87e4b03e6 100644
 --- a/numpy/core/src/umath/loops.c.src
 +++ b/numpy/core/src/umath/loops.c.src
-@@ -1701,34 +1701,6 @@ NPY_NO_EXPORT void
-  * Float types
-  *  #type = npy_float, npy_double#
-  *  #TYPE = FLOAT, DOUBLE#
+@@ -1739,34 +1739,6 @@ NPY_NO_EXPORT void
+ 
+ /**end repeat**/
+ 
+-/**begin repeat
+- * Float types
+- *  #type = npy_float, npy_double#
+- *  #TYPE = FLOAT, DOUBLE#
 - *  #c = s, d#
 - *  #scalarf = npy_invsqrtf, npy_invsqrt#
 - */
@@ -259,18 +261,14 @@ index 9696872fe..eda085366 100644
 -
 -/**end repeat**/
 -
--/**begin repeat
-- * Float types
-- *  #type = npy_float, npy_double#
-- *  #TYPE = FLOAT, DOUBLE#
-  *  #A = F, #
-  *  #c = s, d#
-  *  #scalarf = npy_expf, npy_exp#
+ /**begin repeat
+  * Float types
+  *  #type = npy_float, npy_double#
 diff --git a/numpy/core/src/umath/loops.h.src b/numpy/core/src/umath/loops.h.src
-index cfd05c554..9a27d810f 100644
+index ecc207658..fe8136031 100644
 --- a/numpy/core/src/umath/loops.h.src
 +++ b/numpy/core/src/umath/loops.h.src
-@@ -155,7 +155,7 @@ NPY_NO_EXPORT void
+@@ -161,7 +161,7 @@ NPY_NO_EXPORT void
   */
  
  /**begin repeat1
@@ -280,5 +278,5 @@ index cfd05c554..9a27d810f 100644
   */
  NPY_NO_EXPORT void
 -- 
-2.11.1
+2.17.1
 

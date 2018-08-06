@@ -1,0 +1,25 @@
+From cfab3583b58b615f8849e03e73a66d5932079a5e Mon Sep 17 00:00:00 2001
+From: Michael Sarahan <msarahan@gmail.com>
+Date: Wed, 25 Jul 2018 15:28:32 -0500
+Subject: [PATCH 15/15] fix missing comma in mkl_cp setup.py
+
+---
+ numpy/core/setup.py | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/numpy/core/setup.py b/numpy/core/setup.py
+index cf76f45f7..d7d9e25f3 100644
+--- a/numpy/core/setup.py
++++ b/numpy/core/setup.py
+@@ -966,7 +966,7 @@ def configuration(parent_package='',top_path=None):
+     #######################################################################
+ 
+     config.add_extension('_rational_tests',
+-                    sources=[join('src', 'umath', '_rational_tests.c.src')]
++                    sources=[join('src', 'umath', '_rational_tests.c.src')],
+                     libraries=['mkl_cp'],
+                     extra_info=mkl_info
+                     )
+-- 
+2.17.1
+

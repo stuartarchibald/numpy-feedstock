@@ -1,5 +1,5 @@
 {% set name = "numpy" %}
-{% set version = "1.14.5" %}
+{% set version = "1.15.0" %}
 # {% set sha256 = "a4a433b3a264dbc9aa9c7c241e87c0358a503ea6394f8737df1683c7c9a102ac" %}
 
 package:
@@ -35,7 +35,7 @@ source:
     {%- endif %}
 
 build:
-  number: 4
+  number: 0
   skip: True  # [blas_impl == 'openblas' and win]
   force_use_keys:
     - python
@@ -92,21 +92,19 @@ outputs:
         - python
         - {{ pin_subpackage('numpy-base', exact=True) }}
         # openblas or mkl runtime included with run_exports
-        - mkl_fft # [blas_impl == 'mkl']
+        - mkl_fft  >=1.0.4  # [blas_impl == 'mkl']
         - mkl_random # [blas_impl == 'mkl' and (not win or vc>=14)]
 
     test:
       script: numpy_test.py
       requires:
-        - nose
+        - pytest
         - {{ compiler('c') }}
         - {{ compiler('fortran') }}
         - nomkl  # [x86 and blas_impl != 'mkl']
       commands:
         - f2py -h
         - python -c "import numpy; numpy.show_config()"
-        - conda inspect linkages -p $PREFIX numpy  # [not win]
-        - conda inspect objects -p $PREFIX numpy  # [osx]
       imports:
         - numpy
         - numpy.linalg.lapack_lite
@@ -118,7 +116,7 @@ outputs:
       summary: 'Array processing for numbers, strings, records, and objects.'
       description: |
         NumPy is the fundamental package needed for scientific computing with Python.
-      doc_url: https://docs.scipy.org/doc/numpy-1.14.0/reference/
+      doc_url: https://docs.scipy.org/doc/numpy-{{ version }}/reference/
       dev_url: https://github.com/numpy/numpy
       dev_source_url: https://github.com/numpy/numpy/tree/master/doc
 
