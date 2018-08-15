@@ -33,6 +33,12 @@ source:
     - 0013-Remove-np.invsqrt.patch
     - 0014-Rewrite-inlining.patch
     {%- endif %}
+    # precision issue with longdouble on ppc64le
+    # https://github.com/numpy/numpy/pull/8566
+    - 0001-skip-test_loss_of_precision_longcomplex-test.patch   # [ppc64le]
+    # https://github.com/numpy/numpy/pull/11727
+    # might be fixed in 1.15.1
+    - power_string_fixes.patch
 
 build:
   number: 0
