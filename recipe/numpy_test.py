@@ -27,7 +27,4 @@ elif sys.platform.startswith('linux'):
     os.environ['LDFLAGS'] = ' '.join((os.getenv('LDFLAGS', ''), '-shared'))
     os.environ['FFLAGS'] = ' '.join((os.getenv('FFLAGS', ''), '-Wl,-shared'))
 result = numpy.test()
-if sys.version_info[0:2] == (3, 7) and not result:
-    print("WARNING :: Ignoring numpy test failure on Python 3.7")
-    sys.exit(0)
-sys.exit(not result)
+sys.exit(not result.wasSuccessful())
