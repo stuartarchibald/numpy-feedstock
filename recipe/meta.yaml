@@ -1,5 +1,5 @@
 {% set name = "numpy" %}
-{% set version = "1.15.0" %}
+{% set version = "1.15.1" %}
 # {% set sha256 = "a4a433b3a264dbc9aa9c7c241e87c0358a503ea6394f8737df1683c7c9a102ac" %}
 
 package:
@@ -38,7 +38,7 @@ source:
     - 0001-skip-test_loss_of_precision_longcomplex-test.patch   # [ppc64le]
     # https://github.com/numpy/numpy/pull/11727
     # might be fixed in 1.15.1
-    - power_string_fixes.patch
+    # - power_string_fixes.patch
 
 build:
   number: 0
@@ -94,6 +94,9 @@ outputs:
         - {{ compiler('fortran') }}
       host:
         - python
+        # these import blas metapackages to ensure consistency with downstream libs that also use blas
+        - mkl-devel  {{ mkl }}  # [blas_impl == 'mkl']
+        - openblas-devel {{ openblas }}  # [blas_impl == 'openblas']
       run:
         - python
         - {{ pin_subpackage('numpy-base', exact=True) }}

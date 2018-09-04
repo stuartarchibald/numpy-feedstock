@@ -1,7 +1,7 @@
-From 9c7b79069f0455eac9492580ec179294a9a27f3d Mon Sep 17 00:00:00 2001
+From d629774d2d362f4dd001312f1b69fd3428dc962f Mon Sep 17 00:00:00 2001
 From: Michael Sarahan <msarahan@gmail.com>
 Date: Thu, 26 Jul 2018 11:50:49 -0500
-Subject: [PATCH 09/14] intel mkl_mem all
+Subject: [PATCH] intel mkl_mem all
 
 ---
  numpy/core/include/numpy/ndarraytypes.h       |  40 ++---
@@ -48,9 +48,8 @@ Subject: [PATCH 09/14] intel mkl_mem all
  numpy/core/src/umath/ufunc_object.c           |   2 +
  numpy/core/src/umath/ufunc_type_resolution.c  |   2 +
  numpy/core/src/umath/umathmodule.c            |   2 +
- numpy/core/tests/test_regression.py           |  11 ++
  numpy/random/setup.py                         |   4 +-
- 46 files changed, 394 insertions(+), 23 deletions(-)
+ 45 files changed, 383 insertions(+), 23 deletions(-)
  create mode 100644 numpy/core/src/mkl_defs/aligned_alloc.c
  create mode 100644 numpy/core/src/mkl_defs/aligned_alloc.h
  create mode 100644 numpy/core/src/mkl_defs/mkl_cpy.c
@@ -579,7 +578,7 @@ index 41748c714..9eeec13c1 100644
  
  #include "binop_override.h"
 diff --git a/numpy/core/src/multiarray/arraytypes.c.src b/numpy/core/src/multiarray/arraytypes.c.src
-index b4158ec8e..482ffea75 100644
+index d622effe6..87a3590c0 100644
 --- a/numpy/core/src/multiarray/arraytypes.c.src
 +++ b/numpy/core/src/multiarray/arraytypes.c.src
 @@ -8,6 +8,7 @@
@@ -725,7 +724,7 @@ index 4f9d8fa41..948ab21b3 100644
  /*
   * Platform-specific time_t typedef. Some platforms use 32 bit, some use 64 bit
 diff --git a/numpy/core/src/multiarray/descriptor.c b/numpy/core/src/multiarray/descriptor.c
-index bb3cc9d4e..344d9720c 100644
+index a0dc98f0e..fb2a5ecb1 100644
 --- a/numpy/core/src/multiarray/descriptor.c
 +++ b/numpy/core/src/multiarray/descriptor.c
 @@ -6,6 +6,7 @@
@@ -886,7 +885,7 @@ index d6f2577a3..5f8db622e 100644
  
  
 diff --git a/numpy/core/src/multiarray/multiarraymodule.c b/numpy/core/src/multiarray/multiarraymodule.c
-index f78a748c0..187a337ec 100644
+index fe19cc9ad..27a47655c 100644
 --- a/numpy/core/src/multiarray/multiarraymodule.c
 +++ b/numpy/core/src/multiarray/multiarraymodule.c
 @@ -17,6 +17,7 @@
@@ -1132,7 +1131,7 @@ index 5567b9bbf..2eb71cb1b 100644
  #if defined(NPY_PY3K)
  #define RETVAL(x) x
 diff --git a/numpy/random/setup.py b/numpy/random/setup.py
-index 3f3b773a4..5276e8a94 100644
+index a8d82b141..d38f1e07e 100644
 --- a/numpy/random/setup.py
 +++ b/numpy/random/setup.py
 @@ -5,6 +5,7 @@ import os
@@ -1143,16 +1142,16 @@ index 3f3b773a4..5276e8a94 100644
  
  def needs_mingw_ftime_workaround():
      # We need the mingw workaround for _ftime if the msvc runtime version is
-@@ -40,7 +41,7 @@ def configuration(parent_package='',top_path=None):
-     if needs_mingw_ftime_workaround():
-         defs.append(("NPY_NEEDS_MINGW_TIME_WORKAROUND", None))
+@@ -43,7 +44,7 @@ def configuration(parent_package='',top_path=None):
+     # see https://github.com/cython/cython/issues/2494
+     defs.append(('CYTHON_SMALL_CODE', ''))
  
 -    libs = []
 +    libs = ['mkl_cp']
      # Configure mtrand
      config.add_extension('mtrand',
                           sources=[join('mtrand', x) for x in
-@@ -51,6 +52,7 @@ def configuration(parent_package='',top_path=None):
+@@ -54,6 +55,7 @@ def configuration(parent_package='',top_path=None):
                                    join('mtrand', '*.pyx'),
                                    join('mtrand', '*.pxi'),],
                           define_macros=defs,
