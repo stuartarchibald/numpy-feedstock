@@ -27,4 +27,4 @@ elif sys.platform.startswith('linux'):
     os.environ['LDFLAGS'] = ' '.join((os.getenv('LDFLAGS', ''), '-shared'))
     os.environ['FFLAGS'] = ' '.join((os.getenv('FFLAGS', ''), '-Wl,-shared'))
 result = numpy.test()
-sys.exit(not result.wasSuccessful())
+sys.exit(not result)
