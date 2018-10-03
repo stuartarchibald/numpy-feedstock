@@ -36,9 +36,12 @@ source:
     # precision issue with longdouble on ppc64le
     # https://github.com/numpy/numpy/pull/8566
     - 0001-skip-test_loss_of_precision_longcomplex-test.patch   # [ppc64le]
+    # https://github.com/numpy/numpy/pull/12062
+    # can be dropped in 1.15.3
+    - 0016-OBJECT_TO_-should-check-for-errors.patch
 
 build:
-  number: 0
+  number: 1
   skip: True  # [blas_impl == 'openblas' and win]
   force_use_keys:
     - python
