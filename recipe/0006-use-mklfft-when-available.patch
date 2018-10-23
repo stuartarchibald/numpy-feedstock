@@ -1,14 +1,14 @@
-From aa8592305e55e8deb1079714a253ad563b018e71 Mon Sep 17 00:00:00 2001
+From 4e254a404236c31b64395e0ad945a62ac060ffc8 Mon Sep 17 00:00:00 2001
 From: Michael Sarahan <msarahan@gmail.com>
 Date: Thu, 26 Jul 2018 11:23:44 -0500
-Subject: [PATCH 06/14] use mklfft when available
+Subject: [PATCH 06/15] use mklfft when available
 
 ---
  numpy/fft/__init__.py | 41 +++++++++++++++++++++++++++++++++++++++++
  1 file changed, 41 insertions(+)
 
 diff --git a/numpy/fft/__init__.py b/numpy/fft/__init__.py
-index bbb6ec8c7..7658c2e25 100644
+index bbb6ec8..7658c2e 100644
 --- a/numpy/fft/__init__.py
 +++ b/numpy/fft/__init__.py
 @@ -9,3 +9,44 @@ from .helper import *
@@ -57,5 +57,5 @@ index bbb6ec8c7..7658c2e25 100644
 +
 +del patch_fft
 -- 
-2.17.1
+2.7.4
 

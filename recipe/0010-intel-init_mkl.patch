@@ -1,17 +1,17 @@
-From 36c21bc149f304d9dd54d1fcbb7dcfbfb9fdb55c Mon Sep 17 00:00:00 2001
+From 6f382bb5a8939cbcd59af7afb412b02abe3fcd36 Mon Sep 17 00:00:00 2001
 From: Michael Sarahan <msarahan@gmail.com>
 Date: Thu, 26 Jul 2018 11:52:34 -0500
-Subject: [PATCH 10/14] intel init_mkl
+Subject: [PATCH 10/15] intel init_mkl
 
 ---
- numpy/_distributor_init.py |  27 +++++++
- numpy/_mklinitmodule.c     | 154 +++++++++++++++++++++++++++++++++++++
- numpy/setup.py             |  14 +++-
+ numpy/_distributor_init.py |  27 ++++++++
+ numpy/_mklinitmodule.c     | 154 +++++++++++++++++++++++++++++++++++++++++++++
+ numpy/setup.py             |  14 ++++-
  3 files changed, 194 insertions(+), 1 deletion(-)
  create mode 100644 numpy/_mklinitmodule.c
 
 diff --git a/numpy/_distributor_init.py b/numpy/_distributor_init.py
-index d893ba377..f4e623e47 100644
+index d893ba3..f4e623e 100644
 --- a/numpy/_distributor_init.py
 +++ b/numpy/_distributor_init.py
 @@ -8,3 +8,30 @@ For example, this is a good place to put any checks for hardware requirements.
@@ -47,7 +47,7 @@ index d893ba377..f4e623e47 100644
 +del sys
 diff --git a/numpy/_mklinitmodule.c b/numpy/_mklinitmodule.c
 new file mode 100644
-index 000000000..b9583339e
+index 0000000..b958333
 --- /dev/null
 +++ b/numpy/_mklinitmodule.c
 @@ -0,0 +1,154 @@
@@ -206,7 +206,7 @@ index 000000000..b9583339e
 +}
 +#endif
 diff --git a/numpy/setup.py b/numpy/setup.py
-index 4ccdaeea5..3d06cf686 100644
+index 4ccdaee..3d06cf6 100644
 --- a/numpy/setup.py
 +++ b/numpy/setup.py
 @@ -4,8 +4,19 @@ from __future__ import division, print_function
@@ -238,5 +238,5 @@ index 4ccdaeea5..3d06cf686 100644
  if __name__ == '__main__':
      print('This is the wrong setup.py file to run')
 -- 
-2.17.1
+2.7.4
 

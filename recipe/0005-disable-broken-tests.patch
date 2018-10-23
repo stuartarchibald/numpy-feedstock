@@ -1,17 +1,16 @@
-From 71c94b695b29512335102c6de868c47446084f60 Mon Sep 17 00:00:00 2001
+From 06469fcf5ebb0e5e110cbcad48ed06fb70234c6f Mon Sep 17 00:00:00 2001
 From: Michael Sarahan <msarahan@gmail.com>
 Date: Tue, 12 Jun 2018 09:54:13 -0500
-Subject: [PATCH 05/14] disable broken tests
+Subject: [PATCH 05/15] disable broken tests
 
 MKL messes up this error state, and these tests don't work.
 ---
  numpy/core/tests/test_einsum.py   |  3 ---
  numpy/core/tests/test_errstate.py | 15 ---------------
- numpy/core/tests/test_umath.py    | 11 -----------
- 3 files changed, 29 deletions(-)
+ 2 files changed, 18 deletions(-)
 
 diff --git a/numpy/core/tests/test_einsum.py b/numpy/core/tests/test_einsum.py
-index 8ce374a75..3be17900c 100644
+index 8ce374a..3be1790 100644
 --- a/numpy/core/tests/test_einsum.py
 +++ b/numpy/core/tests/test_einsum.py
 @@ -526,9 +526,6 @@ class TestEinsum(object):
@@ -25,7 +24,7 @@ index 8ce374a75..3be17900c 100644
          self.check_einsum_sums('u2')
  
 diff --git a/numpy/core/tests/test_errstate.py b/numpy/core/tests/test_errstate.py
-index 4f6111921..0b7a528c2 100644
+index 4f61119..0b7a528 100644
 --- a/numpy/core/tests/test_errstate.py
 +++ b/numpy/core/tests/test_errstate.py
 @@ -8,21 +8,6 @@ from numpy.testing import assert_
@@ -50,4 +49,6 @@ index 4f6111921..0b7a528c2 100644
      def test_divide(self):
          with np.errstate(all='raise', under='ignore'):
              a = -np.arange(3)
-2.17.1
+-- 
+2.7.4
+

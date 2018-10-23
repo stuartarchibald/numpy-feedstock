@@ -1,16 +1,16 @@
-From d57e27874a1cbb686a614e1e0c3c4409087694ed Mon Sep 17 00:00:00 2001
+From b50974f01874cc1d5706741188938905d9230ecb Mon Sep 17 00:00:00 2001
 From: Michael Sarahan <msarahan@gmail.com>
 Date: Tue, 12 Jun 2018 09:12:52 -0500
-Subject: [PATCH 14/14] Rewrite inlining
+Subject: [PATCH 14/15] Rewrite inlining
 
 ---
- numpy/core/src/mkl_defs/aligned_alloc.c | 139 ++----------------------
- numpy/core/src/mkl_defs/aligned_alloc.h |  94 +++++++++++++++-
- numpy/core/src/umath/loops.c.src        |  31 ++++--
+ numpy/core/src/mkl_defs/aligned_alloc.c | 139 +++-----------------------------
+ numpy/core/src/mkl_defs/aligned_alloc.h |  94 +++++++++++++++++++--
+ numpy/core/src/umath/loops.c.src        |  31 ++++---
  3 files changed, 121 insertions(+), 143 deletions(-)
 
 diff --git a/numpy/core/src/mkl_defs/aligned_alloc.c b/numpy/core/src/mkl_defs/aligned_alloc.c
-index 667432dfd..37eb17247 100644
+index 667432d..37eb172 100644
 --- a/numpy/core/src/mkl_defs/aligned_alloc.c
 +++ b/numpy/core/src/mkl_defs/aligned_alloc.c
 @@ -1,19 +1,6 @@
@@ -171,7 +171,7 @@ index 667432dfd..37eb17247 100644
 -    }
 -}
 diff --git a/numpy/core/src/mkl_defs/aligned_alloc.h b/numpy/core/src/mkl_defs/aligned_alloc.h
-index edd00805d..acfd30b64 100644
+index edd0080..acfd30b 100644
 --- a/numpy/core/src/mkl_defs/aligned_alloc.h
 +++ b/numpy/core/src/mkl_defs/aligned_alloc.h
 @@ -1,10 +1,94 @@
@@ -275,7 +275,7 @@ index edd00805d..acfd30b64 100644
  #   define PyArray_free call_free
  #   define PyArray_realloc call_aligned_realloc 
 diff --git a/numpy/core/src/umath/loops.c.src b/numpy/core/src/umath/loops.c.src
-index 87e4b03e6..709bbf19e 100644
+index 7839675..9fdc0b1 100644
 --- a/numpy/core/src/umath/loops.c.src
 +++ b/numpy/core/src/umath/loops.c.src
 @@ -45,6 +45,15 @@
@@ -394,5 +394,5 @@ index 87e4b03e6..709bbf19e 100644
              op1[i] = ip1[i] @OP@ ip2c;
          }
 -- 
-2.17.1
+2.7.4
 

@@ -1,54 +1,54 @@
-From d629774d2d362f4dd001312f1b69fd3428dc962f Mon Sep 17 00:00:00 2001
+From 1dfe029de26b1bea09711e576eeed4a20b81456b Mon Sep 17 00:00:00 2001
 From: Michael Sarahan <msarahan@gmail.com>
 Date: Thu, 26 Jul 2018 11:50:49 -0500
-Subject: [PATCH] intel mkl_mem all
+Subject: [PATCH 09/15] intel mkl_mem all
 
 ---
- numpy/core/include/numpy/ndarraytypes.h       |  40 ++---
- numpy/core/setup.py                           |  32 +++-
- numpy/core/src/mkl_defs/aligned_alloc.c       | 146 ++++++++++++++++++
- numpy/core/src/mkl_defs/aligned_alloc.h       |  11 ++
- numpy/core/src/mkl_defs/mkl_cpy.c             |  86 +++++++++++
- numpy/core/src/mkl_defs/mkl_cpy.h             |  10 ++
- numpy/core/src/multiarray/alloc.c             |  20 +++
- .../core/src/multiarray/array_assign_scalar.c |   1 +
- numpy/core/src/multiarray/arrayobject.c       |   2 +
- numpy/core/src/multiarray/arraytypes.c.src    |   5 +
- numpy/core/src/multiarray/compiled_base.c     |   2 +
- numpy/core/src/multiarray/convert.c           |   1 +
- numpy/core/src/multiarray/convert_datatype.c  |   1 +
- numpy/core/src/multiarray/datetime.c          |   2 +
- numpy/core/src/multiarray/datetime_busday.c   |   1 +
- .../core/src/multiarray/datetime_busdaycal.c  |   2 +
- numpy/core/src/multiarray/datetime_strings.c  |   1 +
- numpy/core/src/multiarray/descriptor.c        |   2 +
- numpy/core/src/multiarray/dtype_transfer.c    |   2 +
- numpy/core/src/multiarray/einsum.c.src        |   2 +
- numpy/core/src/multiarray/flagsobject.c       |   1 +
- numpy/core/src/multiarray/getset.c            |   2 +
- numpy/core/src/multiarray/item_selection.c    |   2 +
- numpy/core/src/multiarray/iterators.c         |   2 +
- .../multiarray/lowlevel_strided_loops.c.src   |   1 +
- numpy/core/src/multiarray/mapping.c           |   1 +
- numpy/core/src/multiarray/methods.c           |   1 +
- numpy/core/src/multiarray/multiarraymodule.c  |   1 +
- numpy/core/src/multiarray/nditer_api.c        |   2 +
- numpy/core/src/multiarray/nditer_constr.c     |   2 +
- numpy/core/src/multiarray/nditer_templ.c.src  |   1 +
- numpy/core/src/multiarray/numpyos.c           |   1 +
- numpy/core/src/multiarray/scalarapi.c         |   1 +
- numpy/core/src/multiarray/scalartypes.c.src   |   2 +
- numpy/core/src/multiarray/sequence.c          |   1 +
- numpy/core/src/multiarray/shape.c             |   1 +
- numpy/core/src/multiarray/ucsnarrow.c         |   1 +
- numpy/core/src/npysort/npysort_common.h       |   1 +
- numpy/core/src/umath/_rational_tests.c.src    |   1 +
- numpy/core/src/umath/reduction.c              |   1 +
- numpy/core/src/umath/simd.inc.src             |   1 +
- numpy/core/src/umath/ufunc_object.c           |   2 +
- numpy/core/src/umath/ufunc_type_resolution.c  |   2 +
- numpy/core/src/umath/umathmodule.c            |   2 +
- numpy/random/setup.py                         |   4 +-
+ numpy/core/include/numpy/ndarraytypes.h            |  40 +++---
+ numpy/core/setup.py                                |  32 ++++-
+ numpy/core/src/mkl_defs/aligned_alloc.c            | 146 +++++++++++++++++++++
+ numpy/core/src/mkl_defs/aligned_alloc.h            |  11 ++
+ numpy/core/src/mkl_defs/mkl_cpy.c                  |  86 ++++++++++++
+ numpy/core/src/mkl_defs/mkl_cpy.h                  |  10 ++
+ numpy/core/src/multiarray/alloc.c                  |  20 +++
+ numpy/core/src/multiarray/array_assign_scalar.c    |   1 +
+ numpy/core/src/multiarray/arrayobject.c            |   2 +
+ numpy/core/src/multiarray/arraytypes.c.src         |   5 +
+ numpy/core/src/multiarray/compiled_base.c          |   2 +
+ numpy/core/src/multiarray/convert.c                |   1 +
+ numpy/core/src/multiarray/convert_datatype.c       |   1 +
+ numpy/core/src/multiarray/datetime.c               |   2 +
+ numpy/core/src/multiarray/datetime_busday.c        |   1 +
+ numpy/core/src/multiarray/datetime_busdaycal.c     |   2 +
+ numpy/core/src/multiarray/datetime_strings.c       |   1 +
+ numpy/core/src/multiarray/descriptor.c             |   2 +
+ numpy/core/src/multiarray/dtype_transfer.c         |   2 +
+ numpy/core/src/multiarray/einsum.c.src             |   2 +
+ numpy/core/src/multiarray/flagsobject.c            |   1 +
+ numpy/core/src/multiarray/getset.c                 |   2 +
+ numpy/core/src/multiarray/item_selection.c         |   2 +
+ numpy/core/src/multiarray/iterators.c              |   2 +
+ .../src/multiarray/lowlevel_strided_loops.c.src    |   1 +
+ numpy/core/src/multiarray/mapping.c                |   1 +
+ numpy/core/src/multiarray/methods.c                |   1 +
+ numpy/core/src/multiarray/multiarraymodule.c       |   1 +
+ numpy/core/src/multiarray/nditer_api.c             |   2 +
+ numpy/core/src/multiarray/nditer_constr.c          |   2 +
+ numpy/core/src/multiarray/nditer_templ.c.src       |   1 +
+ numpy/core/src/multiarray/numpyos.c                |   1 +
+ numpy/core/src/multiarray/scalarapi.c              |   1 +
+ numpy/core/src/multiarray/scalartypes.c.src        |   2 +
+ numpy/core/src/multiarray/sequence.c               |   1 +
+ numpy/core/src/multiarray/shape.c                  |   1 +
+ numpy/core/src/multiarray/ucsnarrow.c              |   1 +
+ numpy/core/src/npysort/npysort_common.h            |   1 +
+ numpy/core/src/umath/_rational_tests.c.src         |   1 +
+ numpy/core/src/umath/reduction.c                   |   1 +
+ numpy/core/src/umath/simd.inc.src                  |   1 +
+ numpy/core/src/umath/ufunc_object.c                |   2 +
+ numpy/core/src/umath/ufunc_type_resolution.c       |   2 +
+ numpy/core/src/umath/umathmodule.c                 |   2 +
+ numpy/random/setup.py                              |   4 +-
  45 files changed, 383 insertions(+), 23 deletions(-)
  create mode 100644 numpy/core/src/mkl_defs/aligned_alloc.c
  create mode 100644 numpy/core/src/mkl_defs/aligned_alloc.h
@@ -56,7 +56,7 @@ Subject: [PATCH] intel mkl_mem all
  create mode 100644 numpy/core/src/mkl_defs/mkl_cpy.h
 
 diff --git a/numpy/core/include/numpy/ndarraytypes.h b/numpy/core/include/numpy/ndarraytypes.h
-index cf73cecea..053ab4297 100644
+index cf73cec..053ab42 100644
 --- a/numpy/core/include/numpy/ndarraytypes.h
 +++ b/numpy/core/include/numpy/ndarraytypes.h
 @@ -345,25 +345,27 @@ struct NpyAuxData_tag {
@@ -107,7 +107,7 @@ index cf73cecea..053ab4297 100644
  
  /* Dimensions and strides */
 diff --git a/numpy/core/setup.py b/numpy/core/setup.py
-index 5feb851ef..2d358442a 100644
+index 5feb851..2d35844 100644
 --- a/numpy/core/setup.py
 +++ b/numpy/core/setup.py
 @@ -613,6 +613,7 @@ def configuration(parent_package='',top_path=None):
@@ -118,11 +118,10 @@ index 5feb851ef..2d358442a 100644
  
      config.add_define_macros([("NPY_INTERNAL_BUILD", "1")]) # this macro indicates that Numpy build is in process
      config.add_define_macros([("HAVE_NPY_CONFIG_H", "1")])
-@@ -693,6 +694,17 @@ def configuration(parent_package='',top_path=None):
-     config.add_npy_pkg_config("mlib.ini.in", "lib/npy-pkg-config",
+@@ -694,6 +695,17 @@ def configuration(parent_package='',top_path=None):
              subst_dict)
  
-+    #######################################################################
+     #######################################################################
 +    #                         aligned_alloc library                       #
 +    #######################################################################
 +
@@ -133,14 +132,14 @@ index 5feb851ef..2d358442a 100644
 +                       sources=aligned_alloc_sources,
 +                       include_dirs=[])
 +
-     #######################################################################
++    #######################################################################
      #                         npysort library                             #
      #######################################################################
-@@ -710,6 +722,17 @@ def configuration(parent_package='',top_path=None):
-                        sources=npysort_sources,
+ 
+@@ -711,6 +723,17 @@ def configuration(parent_package='',top_path=None):
                         include_dirs=[])
  
-+    #######################################################################
+     #######################################################################
 +    #                         mkl_cp library                              #
 +    #######################################################################
 +
@@ -151,9 +150,10 @@ index 5feb851ef..2d358442a 100644
 +                       sources=mkl_cp_sources,
 +                       include_dirs=[])
 +
-     #######################################################################
++    #######################################################################
      #                        multiarray module                            #
      #######################################################################
+ 
 @@ -851,7 +874,7 @@ def configuration(parent_package='',top_path=None):
                                    join('*.py')],
                           extra_compile_args=['/Qstd=c99' if platform.system() == "Windows" else ''],
@@ -186,7 +186,7 @@ index 5feb851ef..2d358442a 100644
      #                        struct_ufunc_test module                     #
 diff --git a/numpy/core/src/mkl_defs/aligned_alloc.c b/numpy/core/src/mkl_defs/aligned_alloc.c
 new file mode 100644
-index 000000000..667432dfd
+index 0000000..667432d
 --- /dev/null
 +++ b/numpy/core/src/mkl_defs/aligned_alloc.c
 @@ -0,0 +1,146 @@
@@ -338,7 +338,7 @@ index 000000000..667432dfd
 +}
 diff --git a/numpy/core/src/mkl_defs/aligned_alloc.h b/numpy/core/src/mkl_defs/aligned_alloc.h
 new file mode 100644
-index 000000000..edd00805d
+index 0000000..edd0080
 --- /dev/null
 +++ b/numpy/core/src/mkl_defs/aligned_alloc.h
 @@ -0,0 +1,11 @@
@@ -355,7 +355,7 @@ index 000000000..edd00805d
 +#endif
 diff --git a/numpy/core/src/mkl_defs/mkl_cpy.c b/numpy/core/src/mkl_defs/mkl_cpy.c
 new file mode 100644
-index 000000000..93c4fa006
+index 0000000..93c4fa0
 --- /dev/null
 +++ b/numpy/core/src/mkl_defs/mkl_cpy.c
 @@ -0,0 +1,86 @@
@@ -447,7 +447,7 @@ index 000000000..93c4fa006
 +}
 diff --git a/numpy/core/src/mkl_defs/mkl_cpy.h b/numpy/core/src/mkl_defs/mkl_cpy.h
 new file mode 100644
-index 000000000..74af118dd
+index 0000000..74af118
 --- /dev/null
 +++ b/numpy/core/src/mkl_defs/mkl_cpy.h
 @@ -0,0 +1,10 @@
@@ -462,7 +462,7 @@ index 000000000..74af118dd
 +#   endif
 +#endif
 diff --git a/numpy/core/src/multiarray/alloc.c b/numpy/core/src/multiarray/alloc.c
-index ae4b81cf5..f6a7b489f 100644
+index fe957bf..88d1135 100644
 --- a/numpy/core/src/multiarray/alloc.c
 +++ b/numpy/core/src/multiarray/alloc.c
 @@ -1,6 +1,7 @@
@@ -473,7 +473,7 @@ index ae4b81cf5..f6a7b489f 100644
  
  #if PY_VERSION_HEX >= 0x03060000
  #include <pymem.h>
-@@ -67,6 +68,7 @@ _npy_alloc_cache(npy_uintp nelem, npy_uintp esz, npy_uint msz,
+@@ -75,6 +76,7 @@ _npy_alloc_cache(npy_uintp nelem, npy_uintp esz, npy_uint msz,
  #endif
  }
  
@@ -481,7 +481,7 @@ index ae4b81cf5..f6a7b489f 100644
  /*
   * return pointer p to cache, nelem is number of elements of the cache bucket
   * size (1 or sizeof(npy_intp)) of the block pointed too
-@@ -133,6 +135,7 @@ npy_alloc_cache_dim(npy_uintp sz)
+@@ -142,6 +144,7 @@ npy_alloc_cache_dim(npy_uintp sz)
      if (sz < 2) {
          sz = 2;
      }
@@ -489,7 +489,7 @@ index ae4b81cf5..f6a7b489f 100644
      return _npy_alloc_cache(sz, sizeof(npy_intp), NBUCKETS_DIM, dimcache,
                              &PyArray_malloc);
  }
-@@ -144,6 +147,7 @@ npy_free_cache_dim(void * p, npy_uintp sz)
+@@ -153,6 +156,7 @@ npy_free_cache_dim(void * p, npy_uintp sz)
      if (sz < 2) {
          sz = 2;
      }
@@ -497,7 +497,7 @@ index ae4b81cf5..f6a7b489f 100644
      _npy_free_cache(p, sz, NBUCKETS_DIM, dimcache,
                      &PyArray_free);
  }
-@@ -198,7 +202,11 @@ PyDataMem_NEW(size_t size)
+@@ -207,7 +211,11 @@ PyDataMem_NEW(size_t size)
  {
      void *result;
  
@@ -509,7 +509,7 @@ index ae4b81cf5..f6a7b489f 100644
      if (_PyDataMem_eventhook != NULL) {
          NPY_ALLOW_C_API_DEF
          NPY_ALLOW_C_API
-@@ -220,7 +228,11 @@ PyDataMem_NEW_ZEROED(size_t size, size_t elsize)
+@@ -229,7 +237,11 @@ PyDataMem_NEW_ZEROED(size_t size, size_t elsize)
  {
      void *result;
  
@@ -521,7 +521,7 @@ index ae4b81cf5..f6a7b489f 100644
      if (_PyDataMem_eventhook != NULL) {
          NPY_ALLOW_C_API_DEF
          NPY_ALLOW_C_API
-@@ -241,7 +253,11 @@ NPY_NO_EXPORT void
+@@ -250,7 +262,11 @@ NPY_NO_EXPORT void
  PyDataMem_FREE(void *ptr)
  {
      PyTraceMalloc_Untrack(NPY_TRACE_DOMAIN, (npy_uintp)ptr);
@@ -533,7 +533,7 @@ index ae4b81cf5..f6a7b489f 100644
      if (_PyDataMem_eventhook != NULL) {
          NPY_ALLOW_C_API_DEF
          NPY_ALLOW_C_API
-@@ -261,7 +277,11 @@ PyDataMem_RENEW(void *ptr, size_t size)
+@@ -270,7 +286,11 @@ PyDataMem_RENEW(void *ptr, size_t size)
  {
      void *result;
  
@@ -546,7 +546,7 @@ index ae4b81cf5..f6a7b489f 100644
          PyTraceMalloc_Untrack(NPY_TRACE_DOMAIN, (npy_uintp)ptr);
      }
 diff --git a/numpy/core/src/multiarray/array_assign_scalar.c b/numpy/core/src/multiarray/array_assign_scalar.c
-index 17de99cb9..3fd57e13d 100644
+index 17de99c..3fd57e1 100644
 --- a/numpy/core/src/multiarray/array_assign_scalar.c
 +++ b/numpy/core/src/multiarray/array_assign_scalar.c
 @@ -9,6 +9,7 @@
@@ -558,7 +558,7 @@ index 17de99cb9..3fd57e13d 100644
  #define NPY_NO_DEPRECATED_API NPY_API_VERSION
  #define _MULTIARRAYMODULE
 diff --git a/numpy/core/src/multiarray/arrayobject.c b/numpy/core/src/multiarray/arrayobject.c
-index 41748c714..9eeec13c1 100644
+index 41748c7..9eeec13 100644
 --- a/numpy/core/src/multiarray/arrayobject.c
 +++ b/numpy/core/src/multiarray/arrayobject.c
 @@ -23,6 +23,7 @@ maintainer email:  oliphant.travis@ieee.org
@@ -578,7 +578,7 @@ index 41748c714..9eeec13c1 100644
  
  #include "binop_override.h"
 diff --git a/numpy/core/src/multiarray/arraytypes.c.src b/numpy/core/src/multiarray/arraytypes.c.src
-index d622effe6..87a3590c0 100644
+index 1055f6a..ebc4561 100644
 --- a/numpy/core/src/multiarray/arraytypes.c.src
 +++ b/numpy/core/src/multiarray/arraytypes.c.src
 @@ -8,6 +8,7 @@
@@ -597,7 +597,7 @@ index d622effe6..87a3590c0 100644
  #include <limits.h>
  #include <assert.h>
  
-@@ -1992,6 +1994,7 @@ static void
+@@ -1996,6 +1998,7 @@ static void
  
  /**end repeat**/
  
@@ -605,7 +605,7 @@ index d622effe6..87a3590c0 100644
  /**begin repeat
   *
   * #fname = BOOL,
-@@ -4588,8 +4591,10 @@ initialize_builtin_datetime_metadata(void)
+@@ -4592,8 +4595,10 @@ initialize_builtin_datetime_metadata(void)
      /* Initialize the base aux data */
      memset(data1, 0, sizeof(PyArray_DatetimeDTypeMetaData));
      memset(data2, 0, sizeof(PyArray_DatetimeDTypeMetaData));
@@ -617,7 +617,7 @@ index d622effe6..87a3590c0 100644
      data2->base.clone = datetime_dtype_metadata_clone;
  
 diff --git a/numpy/core/src/multiarray/compiled_base.c b/numpy/core/src/multiarray/compiled_base.c
-index bcb44f6d1..7b8390aff 100644
+index bcb44f6..7b8390a 100644
 --- a/numpy/core/src/multiarray/compiled_base.c
 +++ b/numpy/core/src/multiarray/compiled_base.c
 @@ -2,12 +2,14 @@
@@ -636,7 +636,7 @@ index bcb44f6d1..7b8390aff 100644
  #include "lowlevel_strided_loops.h" /* for npy_bswap8 */
  #include "alloc.h"
 diff --git a/numpy/core/src/multiarray/convert.c b/numpy/core/src/multiarray/convert.c
-index e88582a51..6c66a514d 100644
+index e88582a..6c66a51 100644
 --- a/numpy/core/src/multiarray/convert.c
 +++ b/numpy/core/src/multiarray/convert.c
 @@ -22,6 +22,7 @@
@@ -648,7 +648,7 @@ index e88582a51..6c66a514d 100644
  int
  fallocate(int fd, int mode, off_t offset, off_t len);
 diff --git a/numpy/core/src/multiarray/convert_datatype.c b/numpy/core/src/multiarray/convert_datatype.c
-index 0d79f294c..1c30477db 100644
+index 3df764a..818b1cc 100644
 --- a/numpy/core/src/multiarray/convert_datatype.c
 +++ b/numpy/core/src/multiarray/convert_datatype.c
 @@ -19,6 +19,7 @@
@@ -660,7 +660,7 @@ index 0d79f294c..1c30477db 100644
  
  /*
 diff --git a/numpy/core/src/multiarray/datetime.c b/numpy/core/src/multiarray/datetime.c
-index df9b9cec4..56d474b59 100644
+index df9b9ce..56d474b 100644
 --- a/numpy/core/src/multiarray/datetime.c
 +++ b/numpy/core/src/multiarray/datetime.c
 @@ -15,6 +15,7 @@
@@ -680,7 +680,7 @@ index df9b9cec4..56d474b59 100644
  /*
   * Imports the PyDateTime functions so we can create these objects.
 diff --git a/numpy/core/src/multiarray/datetime_busday.c b/numpy/core/src/multiarray/datetime_busday.c
-index c04a6c125..df58067d0 100644
+index c04a6c1..df58067 100644
 --- a/numpy/core/src/multiarray/datetime_busday.c
 +++ b/numpy/core/src/multiarray/datetime_busday.c
 @@ -22,6 +22,7 @@
@@ -692,7 +692,7 @@ index c04a6c125..df58067d0 100644
  /* Gets the day of the week for a datetime64[D] value */
  static int
 diff --git a/numpy/core/src/multiarray/datetime_busdaycal.c b/numpy/core/src/multiarray/datetime_busdaycal.c
-index 7a26868e8..561133c20 100644
+index 7a26868..561133c 100644
 --- a/numpy/core/src/multiarray/datetime_busdaycal.c
 +++ b/numpy/core/src/multiarray/datetime_busdaycal.c
 @@ -13,6 +13,7 @@
@@ -712,7 +712,7 @@ index 7a26868e8..561133c20 100644
  NPY_NO_EXPORT int
  PyArray_WeekMaskConverter(PyObject *weekmask_in, npy_bool *weekmask)
 diff --git a/numpy/core/src/multiarray/datetime_strings.c b/numpy/core/src/multiarray/datetime_strings.c
-index 4f9d8fa41..948ab21b3 100644
+index 4f9d8fa..948ab21 100644
 --- a/numpy/core/src/multiarray/datetime_strings.c
 +++ b/numpy/core/src/multiarray/datetime_strings.c
 @@ -23,6 +23,7 @@
@@ -724,7 +724,7 @@ index 4f9d8fa41..948ab21b3 100644
  /*
   * Platform-specific time_t typedef. Some platforms use 32 bit, some use 64 bit
 diff --git a/numpy/core/src/multiarray/descriptor.c b/numpy/core/src/multiarray/descriptor.c
-index a0dc98f0e..fb2a5ecb1 100644
+index a0dc98f..fb2a5ec 100644
 --- a/numpy/core/src/multiarray/descriptor.c
 +++ b/numpy/core/src/multiarray/descriptor.c
 @@ -6,6 +6,7 @@
@@ -744,7 +744,7 @@ index a0dc98f0e..fb2a5ecb1 100644
  #include "assert.h"
  
 diff --git a/numpy/core/src/multiarray/dtype_transfer.c b/numpy/core/src/multiarray/dtype_transfer.c
-index 2cb1e0a95..13d636f5f 100644
+index 2cb1e0a..13d636f 100644
 --- a/numpy/core/src/multiarray/dtype_transfer.c
 +++ b/numpy/core/src/multiarray/dtype_transfer.c
 @@ -13,6 +13,7 @@
@@ -764,7 +764,7 @@ index 2cb1e0a95..13d636f5f 100644
  
  #define NPY_LOWLEVEL_BUFFER_BLOCKSIZE  128
 diff --git a/numpy/core/src/multiarray/einsum.c.src b/numpy/core/src/multiarray/einsum.c.src
-index 1765982a0..d8bf72140 100644
+index 1765982..d8bf721 100644
 --- a/numpy/core/src/multiarray/einsum.c.src
 +++ b/numpy/core/src/multiarray/einsum.c.src
 @@ -48,6 +48,8 @@
@@ -777,7 +777,7 @@ index 1765982a0..d8bf72140 100644
  
  /********** PRINTF DEBUG TRACING **************/
 diff --git a/numpy/core/src/multiarray/flagsobject.c b/numpy/core/src/multiarray/flagsobject.c
-index a78bedccb..4b192554b 100644
+index a78bedc..4b19255 100644
 --- a/numpy/core/src/multiarray/flagsobject.c
 +++ b/numpy/core/src/multiarray/flagsobject.c
 @@ -14,6 +14,7 @@
@@ -789,7 +789,7 @@ index a78bedccb..4b192554b 100644
  static void
  _UpdateContiguousFlags(PyArrayObject *ap);
 diff --git a/numpy/core/src/multiarray/getset.c b/numpy/core/src/multiarray/getset.c
-index cae4273ff..cefdfe70c 100644
+index cae4273..cefdfe7 100644
 --- a/numpy/core/src/multiarray/getset.c
 +++ b/numpy/core/src/multiarray/getset.c
 @@ -6,6 +6,7 @@
@@ -809,7 +809,7 @@ index cae4273ff..cefdfe70c 100644
  
  /*******************  array attribute get and set routines ******************/
 diff --git a/numpy/core/src/multiarray/item_selection.c b/numpy/core/src/multiarray/item_selection.c
-index 141b2d922..385a98045 100644
+index 9255857..fe9d4c5 100644
 --- a/numpy/core/src/multiarray/item_selection.c
 +++ b/numpy/core/src/multiarray/item_selection.c
 @@ -4,6 +4,7 @@
@@ -829,7 +829,7 @@ index 141b2d922..385a98045 100644
  
  /*NUMPY_API
 diff --git a/numpy/core/src/multiarray/iterators.c b/numpy/core/src/multiarray/iterators.c
-index 3e3248f53..dc1b839bf 100644
+index 3e3248f..dc1b839 100644
 --- a/numpy/core/src/multiarray/iterators.c
 +++ b/numpy/core/src/multiarray/iterators.c
 @@ -4,6 +4,7 @@
@@ -849,7 +849,7 @@ index 3e3248f53..dc1b839bf 100644
  #define NEWAXIS_INDEX -1
  #define ELLIPSIS_INDEX -2
 diff --git a/numpy/core/src/multiarray/lowlevel_strided_loops.c.src b/numpy/core/src/multiarray/lowlevel_strided_loops.c.src
-index fa68af19a..78d98d520 100644
+index fa68af1..78d98d5 100644
 --- a/numpy/core/src/multiarray/lowlevel_strided_loops.c.src
 +++ b/numpy/core/src/multiarray/lowlevel_strided_loops.c.src
 @@ -17,6 +17,7 @@
@@ -861,7 +861,7 @@ index fa68af19a..78d98d520 100644
  #include "lowlevel_strided_loops.h"
  
 diff --git a/numpy/core/src/multiarray/mapping.c b/numpy/core/src/multiarray/mapping.c
-index f338226c2..9f80945af 100644
+index 57b8f15..391502f 100644
 --- a/numpy/core/src/multiarray/mapping.c
 +++ b/numpy/core/src/multiarray/mapping.c
 @@ -1,6 +1,7 @@
@@ -873,7 +873,7 @@ index f338226c2..9f80945af 100644
  /*#include <stdio.h>*/
  #define NPY_NO_DEPRECATED_API NPY_API_VERSION
 diff --git a/numpy/core/src/multiarray/methods.c b/numpy/core/src/multiarray/methods.c
-index d6f2577a3..5f8db622e 100644
+index d6f2577..5f8db62 100644
 --- a/numpy/core/src/multiarray/methods.c
 +++ b/numpy/core/src/multiarray/methods.c
 @@ -23,6 +23,7 @@
@@ -885,7 +885,7 @@ index d6f2577a3..5f8db622e 100644
  
  
 diff --git a/numpy/core/src/multiarray/multiarraymodule.c b/numpy/core/src/multiarray/multiarraymodule.c
-index fe19cc9ad..27a47655c 100644
+index fe19cc9..27a4765 100644
 --- a/numpy/core/src/multiarray/multiarraymodule.c
 +++ b/numpy/core/src/multiarray/multiarraymodule.c
 @@ -17,6 +17,7 @@
@@ -897,7 +897,7 @@ index fe19cc9ad..27a47655c 100644
  #define NPY_NO_DEPRECATED_API NPY_API_VERSION
  #define _MULTIARRAYMODULE
 diff --git a/numpy/core/src/multiarray/nditer_api.c b/numpy/core/src/multiarray/nditer_api.c
-index 7a33ac05e..ce0090fde 100644
+index 7a33ac0..ce0090f 100644
 --- a/numpy/core/src/multiarray/nditer_api.c
 +++ b/numpy/core/src/multiarray/nditer_api.c
 @@ -13,9 +13,11 @@
@@ -913,7 +913,7 @@ index 7a33ac05e..ce0090fde 100644
  /* Internal helper functions private to this file */
  static npy_intp
 diff --git a/numpy/core/src/multiarray/nditer_constr.c b/numpy/core/src/multiarray/nditer_constr.c
-index c56376f58..599faee81 100644
+index c56376f..599faee 100644
 --- a/numpy/core/src/multiarray/nditer_constr.c
 +++ b/numpy/core/src/multiarray/nditer_constr.c
 @@ -13,11 +13,13 @@
@@ -931,7 +931,7 @@ index c56376f58..599faee81 100644
  
  /* Internal helper functions private to this file */
 diff --git a/numpy/core/src/multiarray/nditer_templ.c.src b/numpy/core/src/multiarray/nditer_templ.c.src
-index 0f0d59972..e143fd6cc 100644
+index 0f0d599..e143fd6 100644
 --- a/numpy/core/src/multiarray/nditer_templ.c.src
 +++ b/numpy/core/src/multiarray/nditer_templ.c.src
 @@ -11,6 +11,7 @@
@@ -943,7 +943,7 @@ index 0f0d59972..e143fd6cc 100644
  /* SPECIALIZED iternext functions that handle the non-buffering part */
  
 diff --git a/numpy/core/src/multiarray/numpyos.c b/numpy/core/src/multiarray/numpyos.c
-index 52dcbf3c8..b097d77bf 100644
+index 52dcbf3..b097d77 100644
 --- a/numpy/core/src/multiarray/numpyos.c
 +++ b/numpy/core/src/multiarray/numpyos.c
 @@ -25,6 +25,7 @@
@@ -955,7 +955,7 @@ index 52dcbf3c8..b097d77bf 100644
  /*
   * From the C99 standard, section 7.19.6: The exponent always contains at least
 diff --git a/numpy/core/src/multiarray/scalarapi.c b/numpy/core/src/multiarray/scalarapi.c
-index 5ef6c0bbf..f0739191f 100644
+index 5ef6c0b..f073919 100644
 --- a/numpy/core/src/multiarray/scalarapi.c
 +++ b/numpy/core/src/multiarray/scalarapi.c
 @@ -18,6 +18,7 @@
@@ -967,7 +967,7 @@ index 5ef6c0bbf..f0739191f 100644
  static PyArray_Descr *
  _descr_from_subtype(PyObject *type)
 diff --git a/numpy/core/src/multiarray/scalartypes.c.src b/numpy/core/src/multiarray/scalartypes.c.src
-index a32aa47ab..8541008b5 100644
+index a32aa47..8541008 100644
 --- a/numpy/core/src/multiarray/scalartypes.c.src
 +++ b/numpy/core/src/multiarray/scalartypes.c.src
 @@ -8,6 +8,7 @@
@@ -987,7 +987,7 @@ index a32aa47ab..8541008b5 100644
  #include "binop_override.h"
  
 diff --git a/numpy/core/src/multiarray/sequence.c b/numpy/core/src/multiarray/sequence.c
-index 4769bdad9..e5415e34b 100644
+index 4769bda..e5415e3 100644
 --- a/numpy/core/src/multiarray/sequence.c
 +++ b/numpy/core/src/multiarray/sequence.c
 @@ -16,6 +16,7 @@
@@ -999,7 +999,7 @@ index 4769bdad9..e5415e34b 100644
  /*************************************************************************
   ****************   Implement Sequence Protocol **************************
 diff --git a/numpy/core/src/multiarray/shape.c b/numpy/core/src/multiarray/shape.c
-index 3ac71e285..779b598c4 100644
+index 3ac71e2..779b598 100644
 --- a/numpy/core/src/multiarray/shape.c
 +++ b/numpy/core/src/multiarray/shape.c
 @@ -16,6 +16,7 @@
@@ -1011,7 +1011,7 @@ index 3ac71e285..779b598c4 100644
  #include "multiarraymodule.h" /* for interned strings */
  #include "templ_common.h" /* for npy_mul_with_overflow_intp */
 diff --git a/numpy/core/src/multiarray/ucsnarrow.c b/numpy/core/src/multiarray/ucsnarrow.c
-index 8e293e9f2..0d902b985 100644
+index 8e293e9..0d902b9 100644
 --- a/numpy/core/src/multiarray/ucsnarrow.c
 +++ b/numpy/core/src/multiarray/ucsnarrow.c
 @@ -14,6 +14,7 @@
@@ -1023,7 +1023,7 @@ index 8e293e9f2..0d902b985 100644
  /*
   * Functions only needed on narrow builds of Python for converting back and
 diff --git a/numpy/core/src/npysort/npysort_common.h b/numpy/core/src/npysort/npysort_common.h
-index a22045b41..17c649a95 100644
+index a22045b..17c649a 100644
 --- a/numpy/core/src/npysort/npysort_common.h
 +++ b/numpy/core/src/npysort/npysort_common.h
 @@ -3,6 +3,7 @@
@@ -1035,7 +1035,7 @@ index a22045b41..17c649a95 100644
  /*
   *****************************************************************************
 diff --git a/numpy/core/src/umath/_rational_tests.c.src b/numpy/core/src/umath/_rational_tests.c.src
-index 9e74845df..f98a0ad16 100644
+index 9e74845..f98a0ad 100644
 --- a/numpy/core/src/umath/_rational_tests.c.src
 +++ b/numpy/core/src/umath/_rational_tests.c.src
 @@ -8,6 +8,7 @@
@@ -1047,7 +1047,7 @@ index 9e74845df..f98a0ad16 100644
  #include "common.h"  /* for error_converting */
  
 diff --git a/numpy/core/src/umath/reduction.c b/numpy/core/src/umath/reduction.c
-index 8136d7b3f..45c6c20bf 100644
+index 8136d7b..45c6c20 100644
 --- a/numpy/core/src/umath/reduction.c
 +++ b/numpy/core/src/umath/reduction.c
 @@ -25,6 +25,7 @@
@@ -1059,7 +1059,7 @@ index 8136d7b3f..45c6c20bf 100644
  /*
   * Allocates a result array for a reduction operation, with
 diff --git a/numpy/core/src/umath/simd.inc.src b/numpy/core/src/umath/simd.inc.src
-index 5c0568c12..4e1af7020 100644
+index 5c0568c..4e1af70 100644
 --- a/numpy/core/src/umath/simd.inc.src
 +++ b/numpy/core/src/umath/simd.inc.src
 @@ -33,6 +33,7 @@
@@ -1071,7 +1071,7 @@ index 5c0568c12..4e1af7020 100644
  static NPY_INLINE npy_uintp
  abs_ptrdiff(char *a, char *b)
 diff --git a/numpy/core/src/umath/ufunc_object.c b/numpy/core/src/umath/ufunc_object.c
-index 59fc5aa20..e9ab22e2e 100644
+index 59fc5aa..e9ab22e 100644
 --- a/numpy/core/src/umath/ufunc_object.c
 +++ b/numpy/core/src/umath/ufunc_object.c
 @@ -27,6 +27,7 @@
@@ -1091,7 +1091,7 @@ index 59fc5aa20..e9ab22e2e 100644
  /********** PRINTF DEBUG TRACING **************/
  #define NPY_UF_DBG_TRACING 0
 diff --git a/numpy/core/src/umath/ufunc_type_resolution.c b/numpy/core/src/umath/ufunc_type_resolution.c
-index 1766ba564..2ad0fb213 100644
+index 1766ba5..2ad0fb2 100644
 --- a/numpy/core/src/umath/ufunc_type_resolution.c
 +++ b/numpy/core/src/umath/ufunc_type_resolution.c
 @@ -12,6 +12,7 @@
@@ -1111,7 +1111,7 @@ index 1766ba564..2ad0fb213 100644
  static const char *
  npy_casting_to_string(NPY_CASTING casting)
 diff --git a/numpy/core/src/umath/umathmodule.c b/numpy/core/src/umath/umathmodule.c
-index 5567b9bbf..2eb71cb1b 100644
+index 5567b9b..2eb71cb 100644
 --- a/numpy/core/src/umath/umathmodule.c
 +++ b/numpy/core/src/umath/umathmodule.c
 @@ -20,6 +20,7 @@
@@ -1131,7 +1131,7 @@ index 5567b9bbf..2eb71cb1b 100644
  #if defined(NPY_PY3K)
  #define RETVAL(x) x
 diff --git a/numpy/random/setup.py b/numpy/random/setup.py
-index a8d82b141..d38f1e07e 100644
+index a8d82b1..d38f1e0 100644
 --- a/numpy/random/setup.py
 +++ b/numpy/random/setup.py
 @@ -5,6 +5,7 @@ import os
@@ -1160,5 +1160,5 @@ index a8d82b141..d38f1e07e 100644
  
      config.add_data_files(('.', join('mtrand', 'randomkit.h')))
 -- 
-2.17.1
+2.7.4
 

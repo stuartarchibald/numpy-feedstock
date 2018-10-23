@@ -1,22 +1,22 @@
-From ae726415f4c10188f308518653d5952b16db8dcb Mon Sep 17 00:00:00 2001
+From 6ed93668db260590dab33e0286a07d8777738464 Mon Sep 17 00:00:00 2001
 From: Michael Sarahan <msarahan@gmail.com>
 Date: Tue, 12 Jun 2018 09:11:09 -0500
-Subject: [PATCH 13/14] Remove np.invsqrt
+Subject: [PATCH 13/15] Remove np.invsqrt
 
 ---
- numpy/core/code_generators/generate_umath.py  |  9 ------
- .../core/code_generators/ufunc_docstrings.py  | 28 -------------------
- numpy/core/include/numpy/npy_math.h           |  6 ----
- numpy/core/setup_common.py                    |  2 +-
- numpy/core/src/npymath/npy_math_complex.c.src | 13 ++-------
- .../core/src/npymath/npy_math_internal.h.src  | 17 ++---------
- numpy/core/src/umath/funcs.inc.src            |  7 -----
- numpy/core/src/umath/loops.c.src              | 28 -------------------
- numpy/core/src/umath/loops.h.src              |  2 +-
+ numpy/core/code_generators/generate_umath.py   |  9 ---------
+ numpy/core/code_generators/ufunc_docstrings.py | 28 --------------------------
+ numpy/core/include/numpy/npy_math.h            |  6 ------
+ numpy/core/setup_common.py                     |  2 +-
+ numpy/core/src/npymath/npy_math_complex.c.src  | 13 ++----------
+ numpy/core/src/npymath/npy_math_internal.h.src | 17 ++--------------
+ numpy/core/src/umath/funcs.inc.src             |  7 -------
+ numpy/core/src/umath/loops.c.src               | 28 --------------------------
+ numpy/core/src/umath/loops.h.src               |  2 +-
  9 files changed, 6 insertions(+), 106 deletions(-)
 
 diff --git a/numpy/core/code_generators/generate_umath.py b/numpy/core/code_generators/generate_umath.py
-index 94b2a1371..ea52f3cfb 100644
+index 94b2a13..ea52f3c 100644
 --- a/numpy/core/code_generators/generate_umath.py
 +++ b/numpy/core/code_generators/generate_umath.py
 @@ -782,15 +782,6 @@ defdict = {
@@ -36,7 +36,7 @@ index 94b2a1371..ea52f3cfb 100644
      Ufunc(1, 1, None,
            docstrings.get('numpy.core.umath.cbrt'),
 diff --git a/numpy/core/code_generators/ufunc_docstrings.py b/numpy/core/code_generators/ufunc_docstrings.py
-index 39b882756..ece0b9cb2 100644
+index 39b8827..ece0b9c 100644
 --- a/numpy/core/code_generators/ufunc_docstrings.py
 +++ b/numpy/core/code_generators/ufunc_docstrings.py
 @@ -3443,34 +3443,6 @@ add_newdoc('numpy.core.umath', 'sqrt',
@@ -75,7 +75,7 @@ index 39b882756..ece0b9cb2 100644
      """
      Return the cube-root of an array, element-wise.
 diff --git a/numpy/core/include/numpy/npy_math.h b/numpy/core/include/numpy/npy_math.h
-index 91ea82e08..dd4876d0b 100644
+index 91ea82e..dd4876d 100644
 --- a/numpy/core/include/numpy/npy_math.h
 +++ b/numpy/core/include/numpy/npy_math.h
 @@ -132,7 +132,6 @@ NPY_INPLACE double npy_log10(double x);
@@ -127,7 +127,7 @@ index 91ea82e08..dd4876d0b 100644
  npy_clongdouble npy_ccosl(npy_clongdouble z);
  npy_clongdouble npy_csinl(npy_clongdouble z);
 diff --git a/numpy/core/setup_common.py b/numpy/core/setup_common.py
-index 9f93b000b..7cb96802a 100644
+index 9f93b00..7cb9680 100644
 --- a/numpy/core/setup_common.py
 +++ b/numpy/core/setup_common.py
 @@ -107,7 +107,7 @@ MANDATORY_FUNCS = ["sin", "cos", "tan", "sinh", "cosh", "tanh", "fabs",
@@ -140,7 +140,7 @@ index 9f93b000b..7cb96802a 100644
          "strtoll", "strtoull", "cbrt", "strtold_l", "fallocate",
          "backtrace"]
 diff --git a/numpy/core/src/npymath/npy_math_complex.c.src b/numpy/core/src/npymath/npy_math_complex.c.src
-index e1de1e14a..d2fae299d 100644
+index e1de1e1..d2fae29 100644
 --- a/numpy/core/src/npymath/npy_math_complex.c.src
 +++ b/numpy/core/src/npymath/npy_math_complex.c.src
 @@ -455,15 +455,6 @@ npy_csqrt@c@(@ctype@ z)
@@ -172,7 +172,7 @@ index e1de1e14a..d2fae299d 100644
   */
  #ifdef HAVE_@KIND@@C@
 diff --git a/numpy/core/src/npymath/npy_math_internal.h.src b/numpy/core/src/npymath/npy_math_internal.h.src
-index 6f919f1bc..127d3df04 100644
+index 6f919f1..127d3df 100644
 --- a/numpy/core/src/npymath/npy_math_internal.h.src
 +++ b/numpy/core/src/npymath/npy_math_internal.h.src
 @@ -379,9 +379,9 @@ NPY_INPLACE double npy_log2(double x)
@@ -187,11 +187,10 @@ index 6f919f1bc..127d3df04 100644
   *         LOG,ERF,EXP,EXPM1,ASIN,ACOS,ATAN,ASINH,ACOSH,ATANH,LOG1P,EXP2,LOG2#
   */
  
-@@ -472,19 +472,6 @@ NPY_INPLACE @type@ npy_@kind@@c@(@type@ x)
- 
+@@ -473,19 +473,6 @@ NPY_INPLACE @type@ npy_@kind@@c@(@type@ x)
  /**end repeat1**/
  
--/**begin repeat1
+ /**begin repeat1
 - * #kind = invsqrt#
 - * #KIND = INVSQRT#
 - */
@@ -204,39 +203,36 @@ index 6f919f1bc..127d3df04 100644
 -
 -/**end repeat1**/
 -
- /**begin repeat1
+-/**begin repeat1
   * #kind = atan2,hypot,pow,fmod,copysign#
   * #KIND = ATAN2,HYPOT,POW,FMOD,COPYSIGN#
+  */
 diff --git a/numpy/core/src/umath/funcs.inc.src b/numpy/core/src/umath/funcs.inc.src
-index 45d80ce25..af2dca1bc 100644
+index 45d80ce..af2dca1 100644
 --- a/numpy/core/src/umath/funcs.inc.src
 +++ b/numpy/core/src/umath/funcs.inc.src
-@@ -270,13 +270,6 @@ nc_sqrt@c@(@ctype@ *x, @ctype@ *r)
-     return;
+@@ -271,13 +271,6 @@ nc_sqrt@c@(@ctype@ *x, @ctype@ *r)
  }
  
--static void
+ static void
 -nc_invsqrt@c@(@ctype@ *x, @ctype@ *r)
 -{
 -    *r = npy_cinvsqrt@c@(*x);
 -    return;
 -}
 -
- static void
+-static void
  nc_rint@c@(@ctype@ *x, @ctype@ *r)
  {
+     r->real = npy_rint@c@(x->real);
 diff --git a/numpy/core/src/umath/loops.c.src b/numpy/core/src/umath/loops.c.src
-index 6305f55d2..87e4b03e6 100644
+index 0cc2823..7839675 100644
 --- a/numpy/core/src/umath/loops.c.src
 +++ b/numpy/core/src/umath/loops.c.src
-@@ -1739,34 +1739,6 @@ NPY_NO_EXPORT void
- 
- /**end repeat**/
- 
--/**begin repeat
-- * Float types
-- *  #type = npy_float, npy_double#
-- *  #TYPE = FLOAT, DOUBLE#
+@@ -1743,34 +1743,6 @@ NPY_NO_EXPORT void
+  * Float types
+  *  #type = npy_float, npy_double#
+  *  #TYPE = FLOAT, DOUBLE#
 - *  #c = s, d#
 - *  #scalarf = npy_invsqrtf, npy_invsqrt#
 - */
@@ -261,11 +257,15 @@ index 6305f55d2..87e4b03e6 100644
 -
 -/**end repeat**/
 -
- /**begin repeat
-  * Float types
-  *  #type = npy_float, npy_double#
+-/**begin repeat
+- * Float types
+- *  #type = npy_float, npy_double#
+- *  #TYPE = FLOAT, DOUBLE#
+  *  #A = F, #
+  *  #c = s, d#
+  *  #scalarf = npy_expf, npy_exp#
 diff --git a/numpy/core/src/umath/loops.h.src b/numpy/core/src/umath/loops.h.src
-index ecc207658..fe8136031 100644
+index ecc2076..fe81360 100644
 --- a/numpy/core/src/umath/loops.h.src
 +++ b/numpy/core/src/umath/loops.h.src
 @@ -161,7 +161,7 @@ NPY_NO_EXPORT void
@@ -278,5 +278,5 @@ index ecc207658..fe8136031 100644
   */
  NPY_NO_EXPORT void
 -- 
-2.17.1
+2.7.4
 

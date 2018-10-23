@@ -1,17 +1,17 @@
-From 60911202a6886263e6975161934116a028e3fa98 Mon Sep 17 00:00:00 2001
+From 6afbdf91141dfc014b74ce4b2a8bcbad95222ed7 Mon Sep 17 00:00:00 2001
 From: Michael Sarahan <msarahan@gmail.com>
 Date: Thu, 26 Jul 2018 11:30:25 -0500
-Subject: [PATCH 07/14] define mkl_version in __init__.py
+Subject: [PATCH 07/15] define mkl_version in __init__.py
 
 ---
  numpy/__init__.py | 2 ++
  1 file changed, 2 insertions(+)
 
 diff --git a/numpy/__init__.py b/numpy/__init__.py
-index d250ed5ac..2916694ab 100644
+index 1f60f07..144569d 100644
 --- a/numpy/__init__.py
 +++ b/numpy/__init__.py
-@@ -196,6 +196,8 @@ else:
+@@ -201,6 +201,8 @@ else:
      del PytestTester
  
  
@@ -21,5 +21,5 @@ index d250ed5ac..2916694ab 100644
          """
          Quick sanity checks for common bugs caused by environment.
 -- 
-2.17.1
+2.7.4
 

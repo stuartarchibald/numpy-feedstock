@@ -1,23 +1,23 @@
-From 721d2a90e6fe32ade0a864665692597f8bc171b1 Mon Sep 17 00:00:00 2001
+From 462577ceb2eca649a10b1d695db9c25b43a1e58e Mon Sep 17 00:00:00 2001
 From: Michael Sarahan <msarahan@gmail.com>
 Date: Thu, 26 Jul 2018 11:30:59 -0500
-Subject: [PATCH 08/14] intel umath optimizations
+Subject: [PATCH 08/15] intel umath optimizations
 
 ---
- numpy/core/code_generators/generate_umath.py  |   64 +
- .../core/code_generators/ufunc_docstrings.py  |   63 +-
- numpy/core/include/numpy/npy_math.h           |   12 +
- numpy/core/setup.py                           |   33 +-
- numpy/core/setup_common.py                    |    8 +-
- numpy/core/src/npymath/npy_math_complex.c.src |   22 +-
- .../core/src/npymath/npy_math_internal.h.src  |   25 +-
- numpy/core/src/umath/funcs.inc.src            |   14 +
- numpy/core/src/umath/loops.c.src              | 1871 +++++++++++++++--
- numpy/core/src/umath/loops.h.src              |   10 +-
+ numpy/core/code_generators/generate_umath.py   |   64 +
+ numpy/core/code_generators/ufunc_docstrings.py |   63 +-
+ numpy/core/include/numpy/npy_math.h            |   12 +
+ numpy/core/setup.py                            |   33 +-
+ numpy/core/setup_common.py                     |    8 +-
+ numpy/core/src/npymath/npy_math_complex.c.src  |   22 +-
+ numpy/core/src/npymath/npy_math_internal.h.src |   25 +-
+ numpy/core/src/umath/funcs.inc.src             |   14 +
+ numpy/core/src/umath/loops.c.src               | 1871 +++++++++++++++++++++---
+ numpy/core/src/umath/loops.h.src               |   10 +-
  10 files changed, 1925 insertions(+), 197 deletions(-)
 
 diff --git a/numpy/core/code_generators/generate_umath.py b/numpy/core/code_generators/generate_umath.py
-index 632bcb41f..94b2a1371 100644
+index 632bcb4..94b2a13 100644
 --- a/numpy/core/code_generators/generate_umath.py
 +++ b/numpy/core/code_generators/generate_umath.py
 @@ -601,6 +601,8 @@ defdict = {
@@ -250,7 +250,7 @@ index 632bcb41f..94b2a1371 100644
            TD(P, f='rint'),
            ),
 diff --git a/numpy/core/code_generators/ufunc_docstrings.py b/numpy/core/code_generators/ufunc_docstrings.py
-index f7d58a26f..39b882756 100644
+index f7d58a2..39b8827 100644
 --- a/numpy/core/code_generators/ufunc_docstrings.py
 +++ b/numpy/core/code_generators/ufunc_docstrings.py
 @@ -1099,6 +1099,40 @@ add_newdoc('numpy.core.umath', 'equal',
@@ -338,7 +338,7 @@ index f7d58a26f..39b882756 100644
      --------
      >>> np.cbrt([1,8,27])
 diff --git a/numpy/core/include/numpy/npy_math.h b/numpy/core/include/numpy/npy_math.h
-index 582390cdc..91ea82e08 100644
+index 582390c..91ea82e 100644
 --- a/numpy/core/include/numpy/npy_math.h
 +++ b/numpy/core/include/numpy/npy_math.h
 @@ -129,8 +129,10 @@ NPY_INPLACE double npy_atan(double x);
@@ -419,7 +419,7 @@ index 582390cdc..91ea82e08 100644
  npy_clongdouble npy_ccosl(npy_clongdouble z);
  npy_clongdouble npy_csinl(npy_clongdouble z);
 diff --git a/numpy/core/setup.py b/numpy/core/setup.py
-index f826b278f..5feb851ef 100644
+index f826b27..5feb851 100644
 --- a/numpy/core/setup.py
 +++ b/numpy/core/setup.py
 @@ -9,6 +9,7 @@ import warnings
@@ -511,7 +511,7 @@ index f826b278f..5feb851ef 100644
  
      #######################################################################
 diff --git a/numpy/core/setup_common.py b/numpy/core/setup_common.py
-index 356482b07..9f93b000b 100644
+index 356482b..9f93b00 100644
 --- a/numpy/core/setup_common.py
 +++ b/numpy/core/setup_common.py
 @@ -101,13 +101,13 @@ def check_api_version(apiversion, codegen_dir):
@@ -549,7 +549,7 @@ index 356482b07..9f93b000b 100644
      ]
  
 diff --git a/numpy/core/src/npymath/npy_math_complex.c.src b/numpy/core/src/npymath/npy_math_complex.c.src
-index cf427dad8..e1de1e14a 100644
+index cf427da..e1de1e1 100644
 --- a/numpy/core/src/npymath/npy_math_complex.c.src
 +++ b/numpy/core/src/npymath/npy_math_complex.c.src
 @@ -369,6 +369,15 @@ npy_clog@c@(@ctype@ z)
@@ -597,7 +597,7 @@ index cf427dad8..e1de1e14a 100644
   */
  #ifdef HAVE_@KIND@@C@
 diff --git a/numpy/core/src/npymath/npy_math_internal.h.src b/numpy/core/src/npymath/npy_math_internal.h.src
-index f2e5229b0..6f919f1bc 100644
+index f2e5229..6f919f1 100644
 --- a/numpy/core/src/npymath/npy_math_internal.h.src
 +++ b/numpy/core/src/npymath/npy_math_internal.h.src
 @@ -379,10 +379,10 @@ NPY_INPLACE double npy_log2(double x)
@@ -627,11 +627,10 @@ index f2e5229b0..6f919f1bc 100644
   */
  #ifdef HAVE_@KIND@@C@
  NPY_INPLACE @type@ npy_@kind@@c@(@type@ x)
-@@ -472,6 +472,19 @@ NPY_INPLACE @type@ npy_@kind@@c@(@type@ x)
- 
+@@ -473,6 +473,19 @@ NPY_INPLACE @type@ npy_@kind@@c@(@type@ x)
  /**end repeat1**/
  
-+/**begin repeat1
+ /**begin repeat1
 + * #kind = invsqrt#
 + * #KIND = INVSQRT#
 + */
@@ -644,43 +643,44 @@ index f2e5229b0..6f919f1bc 100644
 +
 +/**end repeat1**/
 +
- /**begin repeat1
++/**begin repeat1
   * #kind = atan2,hypot,pow,fmod,copysign#
   * #KIND = ATAN2,HYPOT,POW,FMOD,COPYSIGN#
+  */
 diff --git a/numpy/core/src/umath/funcs.inc.src b/numpy/core/src/umath/funcs.inc.src
-index da2ab07f8..45d80ce25 100644
+index da2ab07..45d80ce 100644
 --- a/numpy/core/src/umath/funcs.inc.src
 +++ b/numpy/core/src/umath/funcs.inc.src
-@@ -270,6 +270,13 @@ nc_sqrt@c@(@ctype@ *x, @ctype@ *r)
-     return;
+@@ -271,6 +271,13 @@ nc_sqrt@c@(@ctype@ *x, @ctype@ *r)
  }
  
-+static void
+ static void
 +nc_invsqrt@c@(@ctype@ *x, @ctype@ *r)
 +{
 +    *r = npy_cinvsqrt@c@(*x);
 +    return;
 +}
 +
- static void
++static void
  nc_rint@c@(@ctype@ *x, @ctype@ *r)
  {
-@@ -293,6 +300,13 @@ nc_log1p@c@(@ctype@ *x, @ctype@ *r)
-     return;
+     r->real = npy_rint@c@(x->real);
+@@ -294,6 +301,13 @@ nc_log1p@c@(@ctype@ *x, @ctype@ *r)
  }
  
-+static void
+ static void
 +nc_erf@c@(@ctype@ *x, @ctype@ *r)
 +{
 +    *r = npy_cerf@c@(*x);
 +    return;
 +}
 +
- static void
++static void
  nc_exp@c@(@ctype@ *x, @ctype@ *r)
  {
+     *r = npy_cexp@c@(*x);
 diff --git a/numpy/core/src/umath/loops.c.src b/numpy/core/src/umath/loops.c.src
-index 1ca298b30..6305f55d2 100644
+index 0b02031..0cc2823 100644
 --- a/numpy/core/src/umath/loops.c.src
 +++ b/numpy/core/src/umath/loops.c.src
 @@ -1,5 +1,7 @@
@@ -707,11 +707,10 @@ index 1ca298b30..6305f55d2 100644
  
  /*
   * largest simd vector size in bytes numpy supports
-@@ -40,6 +34,82 @@
- #define NPY_MAX_SIMD_SIZE 1024
+@@ -41,13 +35,89 @@
  #endif
  
-+/*
+ /*
 + * cutoff blocksize for pairwise summation
 + * decreasing it decreases errors slightly as more pairs are summed but
 + * also lowers performance, as the inner loop is unrolled eight times it is
@@ -787,10 +786,10 @@ index 1ca298b30..6305f55d2 100644
 + */
 +#define DISJOINT_OR_SAME(p1, p2, n, s) (((p1) == (p2)) || ((p2) + (n)*(s) < (p1)) || ((p1) + (n)*(s) < (p2)) )
 +
- /*
++/*
   * include vectorized functions and dispatchers
   * this file is safe to include also for generic builds
-@@ -47,7 +117,7 @@
+  * platform specific instructions are either masked via the proprocessor or
   * runtime detected
   */
  #include "simd.inc"
@@ -2613,7 +2612,7 @@ index 1ca298b30..6305f55d2 100644
          *((@type@ *)op1)= npy_copysign@c@(in1, in2);
      }
  }
-@@ -1942,9 +3412,15 @@ NPY_NO_EXPORT void
+@@ -1946,9 +3416,15 @@ NPY_NO_EXPORT void
  NPY_NO_EXPORT void
  @TYPE@_square(char **args, npy_intp *dimensions, npy_intp *steps, void *NPY_UNUSED(data))
  {
@@ -2632,7 +2631,7 @@ index 1ca298b30..6305f55d2 100644
          UNARY_LOOP {
              const @type@ in1 = *(@type@ *)ip1;
              *((@type@ *)op1) = in1*in1;
-@@ -1955,10 +3431,15 @@ NPY_NO_EXPORT void
+@@ -1959,10 +3435,15 @@ NPY_NO_EXPORT void
  NPY_NO_EXPORT void
  @TYPE@_reciprocal(char **args, npy_intp *dimensions, npy_intp *steps, void *NPY_UNUSED(data))
  {
@@ -2652,7 +2651,7 @@ index 1ca298b30..6305f55d2 100644
          UNARY_LOOP {
              const @type@ in1 = *(@type@ *)ip1;
              *((@type@ *)op1) = 1/in1;
-@@ -1986,7 +3467,15 @@ NPY_NO_EXPORT void
+@@ -1990,7 +3471,15 @@ NPY_NO_EXPORT void
  NPY_NO_EXPORT void
  @TYPE@_absolute(char **args, npy_intp *dimensions, npy_intp *steps, void *NPY_UNUSED(func))
  {
@@ -2669,7 +2668,7 @@ index 1ca298b30..6305f55d2 100644
          UNARY_LOOP {
              const @type@ in1 = *(@type@ *)ip1;
              const @type@ tmp = in1 > 0 ? in1 : -in1;
-@@ -2438,9 +3927,18 @@ HALF_ldexp_long(char **args, npy_intp *dimensions, npy_intp *steps, void *NPY_UN
+@@ -2442,9 +3931,18 @@ HALF_ldexp_long(char **args, npy_intp *dimensions, npy_intp *steps, void *NPY_UN
   * #ftype = npy_float, npy_double, npy_longdouble#
   * #c = f, , l#
   * #C = F, , L#
@@ -2688,7 +2687,7 @@ index 1ca298b30..6305f55d2 100644
  static void
  pairwise_sum_@TYPE@(@ftype@ *rr, @ftype@ * ri, char * a, npy_intp n,
                      npy_intp stride)
-@@ -2477,14 +3975,14 @@ pairwise_sum_@TYPE@(@ftype@ *rr, @ftype@ * ri, char * a, npy_intp n,
+@@ -2481,14 +3979,14 @@ pairwise_sum_@TYPE@(@ftype@ *rr, @ftype@ * ri, char * a, npy_intp n,
  
          for (i = 8; i < n - (n % 8); i += 8) {
              /* small blocksizes seems to mess with hardware prefetch */
@@ -2708,7 +2707,7 @@ index 1ca298b30..6305f55d2 100644
              r[7] += *((@ftype@ *)(a + (i + 6) * stride + sizeof(@ftype@)));
          }
  
-@@ -2741,10 +4239,30 @@ NPY_NO_EXPORT void
+@@ -2745,10 +4243,30 @@ NPY_NO_EXPORT void
  NPY_NO_EXPORT void
  @TYPE@_absolute(char **args, npy_intp *dimensions, npy_intp *steps, void *NPY_UNUSED(func))
  {
@@ -2743,7 +2742,7 @@ index 1ca298b30..6305f55d2 100644
      }
  }
  
-@@ -2818,6 +4336,7 @@ NPY_NO_EXPORT void
+@@ -2822,6 +4340,7 @@ NPY_NO_EXPORT void
              ((@ftype@ *)op1)[1] = in2i;
          }
      }
@@ -2752,7 +2751,7 @@ index 1ca298b30..6305f55d2 100644
  /**end repeat1**/
  
 diff --git a/numpy/core/src/umath/loops.h.src b/numpy/core/src/umath/loops.h.src
-index 5c2b2c22c..ecc207658 100644
+index 5c2b2c2..ecc2076 100644
 --- a/numpy/core/src/umath/loops.h.src
 +++ b/numpy/core/src/umath/loops.h.src
 @@ -159,8 +159,16 @@ NPY_NO_EXPORT void
@@ -2774,5 +2773,5 @@ index 5c2b2c22c..ecc207658 100644
  
  /**begin repeat
 -- 
-2.17.1
+2.7.4
 

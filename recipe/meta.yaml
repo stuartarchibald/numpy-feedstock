@@ -1,19 +1,13 @@
 {% set name = "numpy" %}
-{% set version = "1.15.2" %}
-# {% set sha256 = "a4a433b3a264dbc9aa9c7c241e87c0358a503ea6394f8737df1683c7c9a102ac" %}
+{% set version = "1.15.3" %}
 
 package:
   name: numpy_and_dev
   version: {{ version }}
 
 source:
-  # Releases contain stale files (mtrand.c for example), see:
-  # https://github.com/numpy/numpy/issues/9391
-  # url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.zip
-  # sha256: {{ sha256 }}
-  # .. so build from the git source instead:
-  git_url: https://github.com/numpy/numpy
-  git_tag: v{{ version }}
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.zip
+  sha256: 1c0c80e74759fa4942298044274f2c11b08c86230b25b8b819e55e644f5ff2b6
   patches:
     - 0001-fix-windows-case-sensitivity.patch
     - 0002-simplify-arch-flags.patch
@@ -35,13 +29,10 @@ source:
     {%- endif %}
     # precision issue with longdouble on ppc64le
     # https://github.com/numpy/numpy/pull/8566
-    - 0001-skip-test_loss_of_precision_longcomplex-test.patch   # [ppc64le]
-    # https://github.com/numpy/numpy/pull/12062
-    # can be dropped in 1.15.3
-    - 0016-OBJECT_TO_-should-check-for-errors.patch
+    - 0015-skip-test_loss_of_precision_longcomplex-test.patch  # [ppc64le]
 
 build:
-  number: 1
+  number: 0
   skip: True  # [blas_impl == 'openblas' and win]
   force_use_keys:
     - python
