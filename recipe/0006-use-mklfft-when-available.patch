@@ -1,4 +1,4 @@
-From 4e254a404236c31b64395e0ad945a62ac060ffc8 Mon Sep 17 00:00:00 2001
+From 1cff014ed8cf5955c8832cac8b1eb8d095859702 Mon Sep 17 00:00:00 2001
 From: Michael Sarahan <msarahan@gmail.com>
 Date: Thu, 26 Jul 2018 11:23:44 -0500
 Subject: [PATCH 06/15] use mklfft when available

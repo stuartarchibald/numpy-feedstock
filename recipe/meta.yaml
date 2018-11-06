@@ -1,5 +1,5 @@
 {% set name = "numpy" %}
-{% set version = "1.15.3" %}
+{% set version = "1.15.4" %}
 
 package:
   name: numpy_and_dev
@@ -7,7 +7,7 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.zip
-  sha256: 1c0c80e74759fa4942298044274f2c11b08c86230b25b8b819e55e644f5ff2b6
+  sha256: 3d734559db35aa3697dadcea492a423118c5c55d176da2f3be9c98d4803fc2a7
   patches:
     - 0001-fix-windows-case-sensitivity.patch
     - 0002-simplify-arch-flags.patch

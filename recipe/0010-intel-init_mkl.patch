@@ -1,4 +1,4 @@
-From 6f382bb5a8939cbcd59af7afb412b02abe3fcd36 Mon Sep 17 00:00:00 2001
+From 3a7dccb2e64ee443f382eb6bc7fa485fa32aa117 Mon Sep 17 00:00:00 2001
 From: Michael Sarahan <msarahan@gmail.com>
 Date: Thu, 26 Jul 2018 11:52:34 -0500
 Subject: [PATCH 10/15] intel init_mkl

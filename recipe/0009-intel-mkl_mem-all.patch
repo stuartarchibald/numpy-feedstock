@@ -1,4 +1,4 @@
-From 1dfe029de26b1bea09711e576eeed4a20b81456b Mon Sep 17 00:00:00 2001
+From 09ca8f53f073beba780ae628b6087649954af4c9 Mon Sep 17 00:00:00 2001
 From: Michael Sarahan <msarahan@gmail.com>
 Date: Thu, 26 Jul 2018 11:50:49 -0500
 Subject: [PATCH 09/15] intel mkl_mem all
@@ -13,7 +13,7 @@ Subject: [PATCH 09/15] intel mkl_mem all
  numpy/core/src/multiarray/alloc.c                  |  20 +++
  numpy/core/src/multiarray/array_assign_scalar.c    |   1 +
  numpy/core/src/multiarray/arrayobject.c            |   2 +
- numpy/core/src/multiarray/arraytypes.c.src         |   5 +
+ numpy/core/src/multiarray/arraytypes.c.src         |   1 +
  numpy/core/src/multiarray/compiled_base.c          |   2 +
  numpy/core/src/multiarray/convert.c                |   1 +
  numpy/core/src/multiarray/convert_datatype.c       |   1 +
@@ -49,7 +49,7 @@ Subject: [PATCH 09/15] intel mkl_mem all
  numpy/core/src/umath/ufunc_type_resolution.c       |   2 +
  numpy/core/src/umath/umathmodule.c                 |   2 +
  numpy/random/setup.py                              |   4 +-
- 45 files changed, 383 insertions(+), 23 deletions(-)
+ 45 files changed, 379 insertions(+), 23 deletions(-)
  create mode 100644 numpy/core/src/mkl_defs/aligned_alloc.c
  create mode 100644 numpy/core/src/mkl_defs/aligned_alloc.h
  create mode 100644 numpy/core/src/mkl_defs/mkl_cpy.c
@@ -558,7 +558,7 @@ index 17de99c..3fd57e1 100644
  #define NPY_NO_DEPRECATED_API NPY_API_VERSION
  #define _MULTIARRAYMODULE
 diff --git a/numpy/core/src/multiarray/arrayobject.c b/numpy/core/src/multiarray/arrayobject.c
-index 41748c7..9eeec13 100644
+index 8ba3f53..4d18ffa 100644
 --- a/numpy/core/src/multiarray/arrayobject.c
 +++ b/numpy/core/src/multiarray/arrayobject.c
 @@ -23,6 +23,7 @@ maintainer email:  oliphant.travis@ieee.org
@@ -578,10 +578,10 @@ index 41748c7..9eeec13 100644
  
  #include "binop_override.h"
 diff --git a/numpy/core/src/multiarray/arraytypes.c.src b/numpy/core/src/multiarray/arraytypes.c.src
-index 1055f6a..ebc4561 100644
+index 553737a..133e5d8 100644
 --- a/numpy/core/src/multiarray/arraytypes.c.src
 +++ b/numpy/core/src/multiarray/arraytypes.c.src
-@@ -8,6 +8,7 @@
+@@ -9,6 +9,7 @@
  #define _MULTIARRAYMODULE
  #define _NPY_NO_DEPRECATIONS /* for NPY_CHAR */
  
@@ -589,33 +589,6 @@ index 1055f6a..ebc4561 100644
  #include "numpy/npy_common.h"
  #include "numpy/arrayobject.h"
  #include "numpy/arrayscalars.h"
-@@ -34,6 +35,7 @@
- 
- #include "cblasfuncs.h"
- #include "npy_cblas.h"
-+
- #include <limits.h>
- #include <assert.h>
- 
-@@ -1996,6 +1998,7 @@ static void
- 
- /**end repeat**/
- 
-+
- /**begin repeat
-  *
-  * #fname = BOOL,
-@@ -4592,8 +4595,10 @@ initialize_builtin_datetime_metadata(void)
-     /* Initialize the base aux data */
-     memset(data1, 0, sizeof(PyArray_DatetimeDTypeMetaData));
-     memset(data2, 0, sizeof(PyArray_DatetimeDTypeMetaData));
-+
-     data1->base.free = (NpyAuxData_FreeFunc *)PyArray_free;
-     data2->base.free = (NpyAuxData_FreeFunc *)PyArray_free;
-+
-     data1->base.clone = datetime_dtype_metadata_clone;
-     data2->base.clone = datetime_dtype_metadata_clone;
- 
 diff --git a/numpy/core/src/multiarray/compiled_base.c b/numpy/core/src/multiarray/compiled_base.c
 index bcb44f6..7b8390a 100644
 --- a/numpy/core/src/multiarray/compiled_base.c
@@ -724,7 +697,7 @@ index 4f9d8fa..948ab21 100644
  /*
   * Platform-specific time_t typedef. Some platforms use 32 bit, some use 64 bit
 diff --git a/numpy/core/src/multiarray/descriptor.c b/numpy/core/src/multiarray/descriptor.c
-index a0dc98f..fb2a5ec 100644
+index e3a0183..0db5089 100644
 --- a/numpy/core/src/multiarray/descriptor.c
 +++ b/numpy/core/src/multiarray/descriptor.c
 @@ -6,6 +6,7 @@
@@ -742,7 +715,7 @@ index a0dc98f..fb2a5ec 100644
 +#include "mkl_cpy.h"
  #include "alloc.h"
  #include "assert.h"
- 
+ #include "buffer.h"
 diff --git a/numpy/core/src/multiarray/dtype_transfer.c b/numpy/core/src/multiarray/dtype_transfer.c
 index 2cb1e0a..13d636f 100644
 --- a/numpy/core/src/multiarray/dtype_transfer.c
@@ -789,7 +762,7 @@ index a78bedc..4b19255 100644
  static void
  _UpdateContiguousFlags(PyArrayObject *ap);
 diff --git a/numpy/core/src/multiarray/getset.c b/numpy/core/src/multiarray/getset.c
-index cae4273..cefdfe7 100644
+index 24962da..0e1b84a 100644
 --- a/numpy/core/src/multiarray/getset.c
 +++ b/numpy/core/src/multiarray/getset.c
 @@ -6,6 +6,7 @@
@@ -806,8 +779,8 @@ index cae4273..cefdfe7 100644
  #include "mem_overlap.h"
 +#include "mkl_cpy.h"
  #include "alloc.h"
+ #include "buffer.h"
  
- /*******************  array attribute get and set routines ******************/
 diff --git a/numpy/core/src/multiarray/item_selection.c b/numpy/core/src/multiarray/item_selection.c
 index 9255857..fe9d4c5 100644
 --- a/numpy/core/src/multiarray/item_selection.c
@@ -967,7 +940,7 @@ index 5ef6c0b..f073919 100644
  static PyArray_Descr *
  _descr_from_subtype(PyObject *type)
 diff --git a/numpy/core/src/multiarray/scalartypes.c.src b/numpy/core/src/multiarray/scalartypes.c.src
-index a32aa47..8541008 100644
+index 0d7db2d..b77627d 100644
 --- a/numpy/core/src/multiarray/scalartypes.c.src
 +++ b/numpy/core/src/multiarray/scalartypes.c.src
 @@ -8,6 +8,7 @@

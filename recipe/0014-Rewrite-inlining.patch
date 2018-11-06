@@ -1,4 +1,4 @@
-From b50974f01874cc1d5706741188938905d9230ecb Mon Sep 17 00:00:00 2001
+From 06229174850f1131093a9dffe17ddd353aab1c08 Mon Sep 17 00:00:00 2001
 From: Michael Sarahan <msarahan@gmail.com>
 Date: Tue, 12 Jun 2018 09:12:52 -0500
 Subject: [PATCH 14/15] Rewrite inlining

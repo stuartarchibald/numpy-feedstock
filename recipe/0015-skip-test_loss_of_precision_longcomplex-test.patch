@@ -1,4 +1,4 @@
-From d1c43e7596692ccc40cda1caa3692ba03a95fd88 Mon Sep 17 00:00:00 2001
+From 8b287e2de01cf0078acd7d3b3a09db824cc5c0fa Mon Sep 17 00:00:00 2001
 From: Michael Sarahan <msarahan@gmail.com>
 Date: Wed, 15 Aug 2018 11:39:51 -0500
 Subject: [PATCH 15/15] skip test_loss_of_precision_longcomplex test

@@ -1,4 +1,4 @@
-From 320a75cea70315c720cf2ff0a1c0a2ec0f32072a Mon Sep 17 00:00:00 2001
+From fdcfeae4626d1189c72819e7af180478618bd5e7 Mon Sep 17 00:00:00 2001
 From: Michael Sarahan <msarahan@gmail.com>
 Date: Mon, 11 Jun 2018 16:36:07 -0500
 Subject: [PATCH 02/15] simplify arch flags

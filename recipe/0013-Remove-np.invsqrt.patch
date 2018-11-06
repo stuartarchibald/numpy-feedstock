@@ -1,4 +1,4 @@
-From 6ed93668db260590dab33e0286a07d8777738464 Mon Sep 17 00:00:00 2001
+From 2a632daae5fb20185b6d1f567f93a8b85ff61dd1 Mon Sep 17 00:00:00 2001
 From: Michael Sarahan <msarahan@gmail.com>
 Date: Tue, 12 Jun 2018 09:11:09 -0500
 Subject: [PATCH 13/15] Remove np.invsqrt

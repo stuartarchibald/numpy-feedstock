@@ -1,4 +1,4 @@
-From 2f92083030add115471d907c909ffddb6357e459 Mon Sep 17 00:00:00 2001
+From 22671eb66704c198ccb0007f20a58b796ad825e2 Mon Sep 17 00:00:00 2001
 From: Michael Sarahan <msarahan@gmail.com>
 Date: Mon, 11 Jun 2018 17:03:58 -0500
 Subject: [PATCH 12/15] Remove ICC specific flags

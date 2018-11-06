@@ -1,4 +1,4 @@
-From 7cee33acfec4aa58e77cda0e1d70c5506049259d Mon Sep 17 00:00:00 2001
+From 767249bf8beec1c9b4cbdfa485be282ef415621e Mon Sep 17 00:00:00 2001
 From: Michael Sarahan <msarahan@gmail.com>
 Date: Mon, 11 Jun 2018 16:36:41 -0500
 Subject: [PATCH 03/15] Obtain and prefer custom gfortran from env variable

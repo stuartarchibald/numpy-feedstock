@@ -1,4 +1,4 @@
-From 462577ceb2eca649a10b1d695db9c25b43a1e58e Mon Sep 17 00:00:00 2001
+From 5d6d66f6346ecd8a7ad12d4ee30fc83fdb8da9d5 Mon Sep 17 00:00:00 2001
 From: Michael Sarahan <msarahan@gmail.com>
 Date: Thu, 26 Jul 2018 11:30:59 -0500
 Subject: [PATCH 08/15] intel umath optimizations
