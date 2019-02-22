@@ -1,25 +1,25 @@
-From 2a632daae5fb20185b6d1f567f93a8b85ff61dd1 Mon Sep 17 00:00:00 2001
-From: Michael Sarahan <msarahan@gmail.com>
-Date: Tue, 12 Jun 2018 09:11:09 -0500
+From 55aca72e65f9e1b16e196628235c55b28ffc60c9 Mon Sep 17 00:00:00 2001
+From: Stuart Archibald <redacted>
+Date: Fri, 22 Feb 2019 11:19:29 +0000
 Subject: [PATCH 13/15] Remove np.invsqrt
 
 ---
- numpy/core/code_generators/generate_umath.py   |  9 ---------
- numpy/core/code_generators/ufunc_docstrings.py | 28 --------------------------
- numpy/core/include/numpy/npy_math.h            |  6 ------
- numpy/core/setup_common.py                     |  2 +-
- numpy/core/src/npymath/npy_math_complex.c.src  | 13 ++----------
- numpy/core/src/npymath/npy_math_internal.h.src | 17 ++--------------
- numpy/core/src/umath/funcs.inc.src             |  7 -------
- numpy/core/src/umath/loops.c.src               | 28 --------------------------
- numpy/core/src/umath/loops.h.src               |  2 +-
+ numpy/core/code_generators/generate_umath.py  |  9 ------
+ .../core/code_generators/ufunc_docstrings.py  | 28 -------------------
+ numpy/core/include/numpy/npy_math.h           |  6 ----
+ numpy/core/setup_common.py                    |  2 +-
+ numpy/core/src/npymath/npy_math_complex.c.src | 13 ++-------
+ .../core/src/npymath/npy_math_internal.h.src  | 17 ++---------
+ numpy/core/src/umath/funcs.inc.src            |  7 -----
+ numpy/core/src/umath/loops.c.src              | 28 -------------------
+ numpy/core/src/umath/loops.h.src              |  2 +-
  9 files changed, 6 insertions(+), 106 deletions(-)
 
 diff --git a/numpy/core/code_generators/generate_umath.py b/numpy/core/code_generators/generate_umath.py
-index 94b2a13..ea52f3c 100644
+index bb37080..615f435 100644
 --- a/numpy/core/code_generators/generate_umath.py
 +++ b/numpy/core/code_generators/generate_umath.py
-@@ -782,15 +782,6 @@ defdict = {
+@@ -785,15 +785,6 @@ defdict = {
            TD(inexact, f='sqrt', astype={'e':'f'}),
            TD(P, f='sqrt'),
            ),
@@ -36,10 +36,10 @@ index 94b2a13..ea52f3c 100644
      Ufunc(1, 1, None,
            docstrings.get('numpy.core.umath.cbrt'),
 diff --git a/numpy/core/code_generators/ufunc_docstrings.py b/numpy/core/code_generators/ufunc_docstrings.py
-index 39b8827..ece0b9c 100644
+index 9cf52c0..65558f5 100644
 --- a/numpy/core/code_generators/ufunc_docstrings.py
 +++ b/numpy/core/code_generators/ufunc_docstrings.py
-@@ -3443,34 +3443,6 @@ add_newdoc('numpy.core.umath', 'sqrt',
+@@ -3567,34 +3567,6 @@ add_newdoc('numpy.core.umath', 'sqrt',
  
      """)
  
@@ -127,10 +127,10 @@ index 91ea82e..dd4876d 100644
  npy_clongdouble npy_ccosl(npy_clongdouble z);
  npy_clongdouble npy_csinl(npy_clongdouble z);
 diff --git a/numpy/core/setup_common.py b/numpy/core/setup_common.py
-index 9f93b00..7cb9680 100644
+index c242e18..edc7b8f 100644
 --- a/numpy/core/setup_common.py
 +++ b/numpy/core/setup_common.py
-@@ -107,7 +107,7 @@ MANDATORY_FUNCS = ["sin", "cos", "tan", "sinh", "cosh", "tanh", "fabs",
+@@ -108,7 +108,7 @@ MANDATORY_FUNCS = ["sin", "cos", "tan", "sinh", "cosh", "tanh", "fabs",
  # Standard functions which may not be available and for which we have a
  # replacement implementation. Note that some of these are C99 functions.
  OPTIONAL_STDFUNCS = ["expm1", "log1p", "acosh", "asinh", "atanh",
@@ -138,7 +138,7 @@ index 9f93b00..7cb9680 100644
 +        "rint", "trunc", "exp2", "log2", "hypot", "atan2", "pow",
          "copysign", "nextafter", "ftello", "fseeko",
          "strtoll", "strtoull", "cbrt", "strtold_l", "fallocate",
-         "backtrace"]
+         "backtrace", "madvise"]
 diff --git a/numpy/core/src/npymath/npy_math_complex.c.src b/numpy/core/src/npymath/npy_math_complex.c.src
 index e1de1e1..d2fae29 100644
 --- a/numpy/core/src/npymath/npy_math_complex.c.src
@@ -187,10 +187,11 @@ index 6f919f1..127d3df 100644
   *         LOG,ERF,EXP,EXPM1,ASIN,ACOS,ATAN,ASINH,ACOSH,ATANH,LOG1P,EXP2,LOG2#
   */
  
-@@ -473,19 +473,6 @@ NPY_INPLACE @type@ npy_@kind@@c@(@type@ x)
+@@ -472,19 +472,6 @@ NPY_INPLACE @type@ npy_@kind@@c@(@type@ x)
+ 
  /**end repeat1**/
  
- /**begin repeat1
+-/**begin repeat1
 - * #kind = invsqrt#
 - * #KIND = INVSQRT#
 - */
@@ -203,36 +204,39 @@ index 6f919f1..127d3df 100644
 -
 -/**end repeat1**/
 -
--/**begin repeat1
+ /**begin repeat1
   * #kind = atan2,hypot,pow,fmod,copysign#
   * #KIND = ATAN2,HYPOT,POW,FMOD,COPYSIGN#
-  */
 diff --git a/numpy/core/src/umath/funcs.inc.src b/numpy/core/src/umath/funcs.inc.src
 index 45d80ce..af2dca1 100644
 --- a/numpy/core/src/umath/funcs.inc.src
 +++ b/numpy/core/src/umath/funcs.inc.src
-@@ -271,13 +271,6 @@ nc_sqrt@c@(@ctype@ *x, @ctype@ *r)
+@@ -270,13 +270,6 @@ nc_sqrt@c@(@ctype@ *x, @ctype@ *r)
+     return;
  }
  
- static void
+-static void
 -nc_invsqrt@c@(@ctype@ *x, @ctype@ *r)
 -{
 -    *r = npy_cinvsqrt@c@(*x);
 -    return;
 -}
 -
--static void
+ static void
  nc_rint@c@(@ctype@ *x, @ctype@ *r)
  {
-     r->real = npy_rint@c@(x->real);
 diff --git a/numpy/core/src/umath/loops.c.src b/numpy/core/src/umath/loops.c.src
-index 0cc2823..7839675 100644
+index 983dbac..4342d70 100644
 --- a/numpy/core/src/umath/loops.c.src
 +++ b/numpy/core/src/umath/loops.c.src
-@@ -1743,34 +1743,6 @@ NPY_NO_EXPORT void
-  * Float types
-  *  #type = npy_float, npy_double#
-  *  #TYPE = FLOAT, DOUBLE#
+@@ -1735,34 +1735,6 @@ NPY_NO_EXPORT void
+ 
+ /**end repeat**/
+ 
+-/**begin repeat
+- * Float types
+- *  #type = npy_float, npy_double#
+- *  #TYPE = FLOAT, DOUBLE#
 - *  #c = s, d#
 - *  #scalarf = npy_invsqrtf, npy_invsqrt#
 - */
@@ -257,15 +261,11 @@ index 0cc2823..7839675 100644
 -
 -/**end repeat**/
 -
--/**begin repeat
-- * Float types
-- *  #type = npy_float, npy_double#
-- *  #TYPE = FLOAT, DOUBLE#
-  *  #A = F, #
-  *  #c = s, d#
-  *  #scalarf = npy_expf, npy_exp#
+ /**begin repeat
+  * Float types
+  *  #type = npy_float, npy_double#
 diff --git a/numpy/core/src/umath/loops.h.src b/numpy/core/src/umath/loops.h.src
-index ecc2076..fe81360 100644
+index e939c45..f848986 100644
 --- a/numpy/core/src/umath/loops.h.src
 +++ b/numpy/core/src/umath/loops.h.src
 @@ -161,7 +161,7 @@ NPY_NO_EXPORT void
@@ -278,5 +278,5 @@ index ecc2076..fe81360 100644
   */
  NPY_NO_EXPORT void
 -- 
-2.7.4
+2.20.1
 

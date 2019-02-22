@@ -1,6 +1,6 @@
-From 5f925934c02327e79fcfa0570504c81210cbbcba Mon Sep 17 00:00:00 2001
-From: Michael Sarahan <msarahan@gmail.com>
-Date: Thu, 26 Jul 2018 11:52:57 -0500
+From 15ca081b39d0107ee86636dd5496b2031f233dee Mon Sep 17 00:00:00 2001
+From: Stuart Archibald <redacted>
+Date: Fri, 22 Feb 2019 10:47:03 +0000
 Subject: [PATCH 11/15] intel mkl_random
 
 ---
@@ -11,7 +11,6 @@ Subject: [PATCH 11/15] intel mkl_random
  4 files changed, 20 insertions(+)
  create mode 100644 numpy/random_intel/__init__.py
  create mode 100644 numpy/random_intel/setup.py
- mode change 100644 => 100755 numpy/setup.py
 
 diff --git a/numpy/random_intel/__init__.py b/numpy/random_intel/__init__.py
 new file mode 100644
@@ -43,9 +42,7 @@ index 0000000..6d4fecf
 +    from numpy.distutils.core import setup
 +    setup(configuration=configuration)
 diff --git a/numpy/setup.py b/numpy/setup.py
-old mode 100644
-new mode 100755
-index 3d06cf6..0098b56
+index 3d06cf6..0098b56 100644
 --- a/numpy/setup.py
 +++ b/numpy/setup.py
 @@ -29,6 +29,7 @@ def configuration(parent_package='',top_path=None):
@@ -70,5 +67,5 @@ index aa6f69f..8b062ad 100644
              # default encoding is defined (e.g. LANG='C')
              with tokenize.open(str(path)) as file:
 -- 
-2.7.4
+2.20.1
 

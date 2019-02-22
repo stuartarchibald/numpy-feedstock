@@ -1,26 +1,26 @@
-From 5d6d66f6346ecd8a7ad12d4ee30fc83fdb8da9d5 Mon Sep 17 00:00:00 2001
-From: Michael Sarahan <msarahan@gmail.com>
-Date: Thu, 26 Jul 2018 11:30:59 -0500
+From a0103d8b50dd15bad287f25d0fa9b38d6b9f2f5d Mon Sep 17 00:00:00 2001
+From: Stuart Archibald <redacted>
+Date: Fri, 22 Feb 2019 10:36:44 +0000
 Subject: [PATCH 08/15] intel umath optimizations
 
 ---
- numpy/core/code_generators/generate_umath.py   |   64 +
- numpy/core/code_generators/ufunc_docstrings.py |   63 +-
- numpy/core/include/numpy/npy_math.h            |   12 +
- numpy/core/setup.py                            |   33 +-
- numpy/core/setup_common.py                     |    8 +-
- numpy/core/src/npymath/npy_math_complex.c.src  |   22 +-
- numpy/core/src/npymath/npy_math_internal.h.src |   25 +-
- numpy/core/src/umath/funcs.inc.src             |   14 +
- numpy/core/src/umath/loops.c.src               | 1871 +++++++++++++++++++++---
- numpy/core/src/umath/loops.h.src               |   10 +-
- 10 files changed, 1925 insertions(+), 197 deletions(-)
+ numpy/core/code_generators/generate_umath.py  |   64 +
+ .../core/code_generators/ufunc_docstrings.py  |   63 +-
+ numpy/core/include/numpy/npy_math.h           |   12 +
+ numpy/core/setup.py                           |   26 +-
+ numpy/core/setup_common.py                    |    8 +-
+ numpy/core/src/npymath/npy_math_complex.c.src |   22 +-
+ .../core/src/npymath/npy_math_internal.h.src  |   25 +-
+ numpy/core/src/umath/funcs.inc.src            |   14 +
+ numpy/core/src/umath/loops.c.src              | 1862 +++++++++++++++--
+ numpy/core/src/umath/loops.h.src              |   10 +-
+ 10 files changed, 1915 insertions(+), 191 deletions(-)
 
 diff --git a/numpy/core/code_generators/generate_umath.py b/numpy/core/code_generators/generate_umath.py
-index 632bcb4..94b2a13 100644
+index f5ee02c..bb37080 100644
 --- a/numpy/core/code_generators/generate_umath.py
 +++ b/numpy/core/code_generators/generate_umath.py
-@@ -601,6 +601,8 @@ defdict = {
+@@ -604,6 +604,8 @@ defdict = {
      Ufunc(1, 1, None,
            docstrings.get('numpy.core.umath.arccos'),
            None,
@@ -29,7 +29,7 @@ index 632bcb4..94b2a13 100644
            TD(inexact, f='acos', astype={'e':'f'}),
            TD(P, f='arccos'),
            ),
-@@ -608,6 +610,8 @@ defdict = {
+@@ -611,6 +613,8 @@ defdict = {
      Ufunc(1, 1, None,
            docstrings.get('numpy.core.umath.arccosh'),
            None,
@@ -38,7 +38,7 @@ index 632bcb4..94b2a13 100644
            TD(inexact, f='acosh', astype={'e':'f'}),
            TD(P, f='arccosh'),
            ),
-@@ -615,6 +619,8 @@ defdict = {
+@@ -618,6 +622,8 @@ defdict = {
      Ufunc(1, 1, None,
            docstrings.get('numpy.core.umath.arcsin'),
            None,
@@ -47,7 +47,7 @@ index 632bcb4..94b2a13 100644
            TD(inexact, f='asin', astype={'e':'f'}),
            TD(P, f='arcsin'),
            ),
-@@ -622,6 +628,8 @@ defdict = {
+@@ -625,6 +631,8 @@ defdict = {
      Ufunc(1, 1, None,
            docstrings.get('numpy.core.umath.arcsinh'),
            None,
@@ -56,7 +56,7 @@ index 632bcb4..94b2a13 100644
            TD(inexact, f='asinh', astype={'e':'f'}),
            TD(P, f='arcsinh'),
            ),
-@@ -629,6 +637,8 @@ defdict = {
+@@ -632,6 +640,8 @@ defdict = {
      Ufunc(1, 1, None,
            docstrings.get('numpy.core.umath.arctan'),
            None,
@@ -65,7 +65,7 @@ index 632bcb4..94b2a13 100644
            TD(inexact, f='atan', astype={'e':'f'}),
            TD(P, f='arctan'),
            ),
-@@ -636,6 +646,8 @@ defdict = {
+@@ -639,6 +649,8 @@ defdict = {
      Ufunc(1, 1, None,
            docstrings.get('numpy.core.umath.arctanh'),
            None,
@@ -74,7 +74,7 @@ index 632bcb4..94b2a13 100644
            TD(inexact, f='atanh', astype={'e':'f'}),
            TD(P, f='arctanh'),
            ),
-@@ -643,6 +655,8 @@ defdict = {
+@@ -646,6 +658,8 @@ defdict = {
      Ufunc(1, 1, None,
            docstrings.get('numpy.core.umath.cos'),
            None,
@@ -83,7 +83,7 @@ index 632bcb4..94b2a13 100644
            TD(inexact, f='cos', astype={'e':'f'}),
            TD(P, f='cos'),
            ),
-@@ -650,6 +664,8 @@ defdict = {
+@@ -653,6 +667,8 @@ defdict = {
      Ufunc(1, 1, None,
            docstrings.get('numpy.core.umath.sin'),
            None,
@@ -92,7 +92,7 @@ index 632bcb4..94b2a13 100644
            TD(inexact, f='sin', astype={'e':'f'}),
            TD(P, f='sin'),
            ),
-@@ -657,6 +673,8 @@ defdict = {
+@@ -660,6 +676,8 @@ defdict = {
      Ufunc(1, 1, None,
            docstrings.get('numpy.core.umath.tan'),
            None,
@@ -101,7 +101,7 @@ index 632bcb4..94b2a13 100644
            TD(inexact, f='tan', astype={'e':'f'}),
            TD(P, f='tan'),
            ),
-@@ -664,6 +682,8 @@ defdict = {
+@@ -667,6 +685,8 @@ defdict = {
      Ufunc(1, 1, None,
            docstrings.get('numpy.core.umath.cosh'),
            None,
@@ -110,7 +110,7 @@ index 632bcb4..94b2a13 100644
            TD(inexact, f='cosh', astype={'e':'f'}),
            TD(P, f='cosh'),
            ),
-@@ -671,6 +691,8 @@ defdict = {
+@@ -674,6 +694,8 @@ defdict = {
      Ufunc(1, 1, None,
            docstrings.get('numpy.core.umath.sinh'),
            None,
@@ -119,7 +119,7 @@ index 632bcb4..94b2a13 100644
            TD(inexact, f='sinh', astype={'e':'f'}),
            TD(P, f='sinh'),
            ),
-@@ -678,6 +700,8 @@ defdict = {
+@@ -681,6 +703,8 @@ defdict = {
      Ufunc(1, 1, None,
            docstrings.get('numpy.core.umath.tanh'),
            None,
@@ -128,7 +128,7 @@ index 632bcb4..94b2a13 100644
            TD(inexact, f='tanh', astype={'e':'f'}),
            TD(P, f='tanh'),
            ),
-@@ -685,6 +709,8 @@ defdict = {
+@@ -688,6 +712,8 @@ defdict = {
      Ufunc(1, 1, None,
            docstrings.get('numpy.core.umath.exp'),
            None,
@@ -137,7 +137,7 @@ index 632bcb4..94b2a13 100644
            TD(inexact, f='exp', astype={'e':'f'}),
            TD(P, f='exp'),
            ),
-@@ -699,13 +725,26 @@ defdict = {
+@@ -702,13 +728,26 @@ defdict = {
      Ufunc(1, 1, None,
            docstrings.get('numpy.core.umath.expm1'),
            None,
@@ -152,7 +152,7 @@ index 632bcb4..94b2a13 100644
 +          None,
 +          TD('e', f='erf', astype={'e':'f'}),
 +          TD(inexactvec),
-+          TD(inexact, f='erf', astype={'e':'f'}),
++          TD(flts, f='erf', astype={'e':'f'}),
 +          TD(P, f='erf'),
 +          ),
  'log':
@@ -164,7 +164,7 @@ index 632bcb4..94b2a13 100644
            TD(inexact, f='log', astype={'e':'f'}),
            TD(P, f='log'),
            ),
-@@ -720,6 +759,8 @@ defdict = {
+@@ -723,6 +762,8 @@ defdict = {
      Ufunc(1, 1, None,
            docstrings.get('numpy.core.umath.log10'),
            None,
@@ -173,7 +173,7 @@ index 632bcb4..94b2a13 100644
            TD(inexact, f='log10', astype={'e':'f'}),
            TD(P, f='log10'),
            ),
-@@ -727,6 +768,8 @@ defdict = {
+@@ -730,6 +771,8 @@ defdict = {
      Ufunc(1, 1, None,
            docstrings.get('numpy.core.umath.log1p'),
            None,
@@ -182,7 +182,7 @@ index 632bcb4..94b2a13 100644
            TD(inexact, f='log1p', astype={'e':'f'}),
            TD(P, f='log1p'),
            ),
-@@ -739,10 +782,21 @@ defdict = {
+@@ -742,10 +785,21 @@ defdict = {
            TD(inexact, f='sqrt', astype={'e':'f'}),
            TD(P, f='sqrt'),
            ),
@@ -204,7 +204,7 @@ index 632bcb4..94b2a13 100644
            TD(flts, f='cbrt', astype={'e':'f'}),
            TD(P, f='cbrt'),
            ),
-@@ -750,6 +804,8 @@ defdict = {
+@@ -753,6 +807,8 @@ defdict = {
      Ufunc(1, 1, None,
            docstrings.get('numpy.core.umath.ceil'),
            None,
@@ -213,7 +213,7 @@ index 632bcb4..94b2a13 100644
            TD(flts, f='ceil', astype={'e':'f'}),
            TD(P, f='ceil'),
            ),
-@@ -757,6 +813,8 @@ defdict = {
+@@ -760,6 +816,8 @@ defdict = {
      Ufunc(1, 1, None,
            docstrings.get('numpy.core.umath.trunc'),
            None,
@@ -222,7 +222,7 @@ index 632bcb4..94b2a13 100644
            TD(flts, f='trunc', astype={'e':'f'}),
            TD(P, f='trunc'),
            ),
-@@ -764,6 +822,8 @@ defdict = {
+@@ -767,6 +825,8 @@ defdict = {
      Ufunc(1, 1, None,
            docstrings.get('numpy.core.umath.fabs'),
            None,
@@ -231,7 +231,7 @@ index 632bcb4..94b2a13 100644
            TD(flts, f='fabs', astype={'e':'f'}),
            TD(P, f='fabs'),
         ),
-@@ -771,6 +831,8 @@ defdict = {
+@@ -774,6 +834,8 @@ defdict = {
      Ufunc(1, 1, None,
            docstrings.get('numpy.core.umath.floor'),
            None,
@@ -240,7 +240,7 @@ index 632bcb4..94b2a13 100644
            TD(flts, f='floor', astype={'e':'f'}),
            TD(P, f='floor'),
            ),
-@@ -778,6 +840,8 @@ defdict = {
+@@ -781,6 +843,8 @@ defdict = {
      Ufunc(1, 1, None,
            docstrings.get('numpy.core.umath.rint'),
            None,
@@ -250,10 +250,10 @@ index 632bcb4..94b2a13 100644
            TD(P, f='rint'),
            ),
 diff --git a/numpy/core/code_generators/ufunc_docstrings.py b/numpy/core/code_generators/ufunc_docstrings.py
-index f7d58a2..39b8827 100644
+index 8a690c4..9cf52c0 100644
 --- a/numpy/core/code_generators/ufunc_docstrings.py
 +++ b/numpy/core/code_generators/ufunc_docstrings.py
-@@ -1099,6 +1099,40 @@ add_newdoc('numpy.core.umath', 'equal',
+@@ -1100,6 +1100,40 @@ add_newdoc('numpy.core.umath', 'equal',
  
      """)
  
@@ -294,7 +294,7 @@ index f7d58a2..39b8827 100644
  add_newdoc('numpy.core.umath', 'exp',
      """
      Calculate the exponential of all elements in the input array.
-@@ -3409,6 +3443,34 @@ add_newdoc('numpy.core.umath', 'sqrt',
+@@ -3533,6 +3567,34 @@ add_newdoc('numpy.core.umath', 'sqrt',
  
      """)
  
@@ -329,7 +329,7 @@ index f7d58a2..39b8827 100644
  add_newdoc('numpy.core.umath', 'cbrt',
      """
      Return the cube-root of an array, element-wise.
-@@ -3429,7 +3491,6 @@ add_newdoc('numpy.core.umath', 'cbrt',
+@@ -3553,7 +3615,6 @@ add_newdoc('numpy.core.umath', 'cbrt',
          If `out` was provided, `y` is a reference to it.
          $OUT_SCALAR_1
  
@@ -419,10 +419,10 @@ index 582390c..91ea82e 100644
  npy_clongdouble npy_ccosl(npy_clongdouble z);
  npy_clongdouble npy_csinl(npy_clongdouble z);
 diff --git a/numpy/core/setup.py b/numpy/core/setup.py
-index f826b27..5feb851 100644
+index 467b590..fb0386e 100644
 --- a/numpy/core/setup.py
 +++ b/numpy/core/setup.py
-@@ -9,6 +9,7 @@ import warnings
+@@ -8,6 +8,7 @@ import warnings
  import platform
  from os.path import join
  from numpy.distutils import log
@@ -430,7 +430,7 @@ index f826b27..5feb851 100644
  from distutils.dep_util import newer
  from distutils.sysconfig import get_config_var
  from numpy._build_utils.apple_accelerate import (
-@@ -760,7 +761,6 @@ def configuration(parent_package='',top_path=None):
+@@ -807,7 +808,6 @@ def configuration(parent_package='',top_path=None):
              join('include', 'numpy', 'noprefix.h'),
              join('include', 'numpy', 'npy_interrupt.h'),
              join('include', 'numpy', 'npy_3kcompat.h'),
@@ -438,7 +438,7 @@ index f826b27..5feb851 100644
              join('include', 'numpy', 'halffloat.h'),
              join('include', 'numpy', 'npy_common.h'),
              join('include', 'numpy', 'npy_os.h'),
-@@ -772,7 +772,7 @@ def configuration(parent_package='',top_path=None):
+@@ -819,7 +819,7 @@ def configuration(parent_package='',top_path=None):
              join('include', 'numpy', 'npy_1_7_deprecated_api.h'),
              # add library sources as distuils does not consider libraries
              # dependencies
@@ -447,19 +447,7 @@ index f826b27..5feb851 100644
  
      multiarray_src = [
              join('src', 'multiarray', 'alloc.c'),
-@@ -849,9 +849,10 @@ def configuration(parent_package='',top_path=None):
-                                   generate_numpy_api,
-                                   join(codegen_dir, 'generate_numpy_api.py'),
-                                   join('*.py')],
-+                         extra_compile_args=['/Qstd=c99' if platform.system() == "Windows" else ''],
-                          depends=deps + multiarray_deps,
-                          libraries=['npymath', 'npysort'],
--                         extra_info=extra_info)
-+                         extra_info=get_info('mkl'))
- 
-     #######################################################################
-     #                           umath module                              #
-@@ -870,13 +871,14 @@ def configuration(parent_package='',top_path=None):
+@@ -886,13 +886,14 @@ def configuration(parent_package='',top_path=None):
              f.close()
          return []
  
@@ -473,48 +461,47 @@ index f826b27..5feb851 100644
              join('src', 'umath', 'simd.inc.src'),
 -            join('src', 'umath', 'loops.h.src'),
 -            join('src', 'umath', 'loops.c.src'),
+             join('src', 'umath', 'matmul.h.src'),
+             join('src', 'umath', 'matmul.c.src'),
              join('src', 'umath', 'ufunc_object.c'),
-             join('src', 'umath', 'extobj.c'),
-             join('src', 'umath', 'cpuid.c'),
-@@ -902,14 +904,31 @@ def configuration(parent_package='',top_path=None):
-             join('src', 'private', 'ufunc_override.h'),
-             join('src', 'private', 'binop_override.h')] + npymath_sources
+@@ -915,6 +916,20 @@ def configuration(parent_package='',top_path=None):
+             join(codegen_dir, 'generate_ufunc_api.py'),
+             ]
  
-+    npymathc_path = join('build', 'src.%s-%s.%s' % (sysconfig.get_platform(), sys.version_info[0], sys.version_info[1]), 'numpy', 'core', 'src', 'npymath')
 +    if platform.system() == "Windows":
 +        eca = ['/fp:fast=2', '/Qimf-precision=high', '/Qprec-sqrt', '/Qstd=c99']
 +        if sys.version_info < (3, 0):
 +            eca.append('/Qprec-div')
 +    else:
-+        eca = ['-fp-model fast=2', '-fimf-precision=high', '-prec-sqrt']
++        eca = ['-fp-model', 'fast=2', '-fimf-precision=high', '-prec-sqrt']
 +    config.add_library('loops',
 +                       sources=loops_src,
-+                       include_dirs=[npymathc_path],
++                       include_dirs=[],
 +                       extra_compiler_args=eca,
 +                       depends=deps + umath_deps,
++                       macros=getattr(config, 'define_macros', getattr(config.get_distribution(), 'define_macros', []))
 +                       )
 +
-+    mkl_info = get_info('mkl')
-     config.add_extension('umath',
-                          sources=umath_src +
-                                  [generate_config_h,
-                                  generate_numpyconfig_h,
-                                  generate_umath_c,
-                                  generate_ufunc_api],
--                         depends=deps + umath_deps,
--                         libraries=['npymath'],
-+                         include_dirs=[npymathc_path],
-+                         depends=deps + umath_deps + loops_src,
-+                         libraries=['loops', 'npymath'],
-+                         extra_info=mkl_info
-                          )
+     config.add_extension('_multiarray_umath',
+                          sources=multiarray_src + umath_src +
+                                  npymath_sources + common_src +
+@@ -926,9 +941,10 @@ def configuration(parent_package='',top_path=None):
+                                   generate_umath_c,
+                                   generate_ufunc_api,
+                                  ],
++                         extra_compile_args=['/Qstd=c99' if platform.system() == "Windows" else ''],
+                          depends=deps + multiarray_deps + umath_deps +
+                                 common_deps,
+-                         libraries=['npymath', 'npysort'],
++                         libraries=['loops', 'npymath', 'npysort'],
+                          extra_info=extra_info)
  
      #######################################################################
 diff --git a/numpy/core/setup_common.py b/numpy/core/setup_common.py
-index 356482b..9f93b00 100644
+index f837df1..c242e18 100644
 --- a/numpy/core/setup_common.py
 +++ b/numpy/core/setup_common.py
-@@ -101,13 +101,13 @@ def check_api_version(apiversion, codegen_dir):
+@@ -102,13 +102,13 @@ def check_api_version(apiversion, codegen_dir):
                        MismatchCAPIWarning, stacklevel=2)
  # Mandatory functions: if not found, fail the build
  MANDATORY_FUNCS = ["sin", "cos", "tan", "sinh", "cosh", "tanh", "fabs",
@@ -529,8 +516,8 @@ index 356482b..9f93b00 100644
 +        "rint", "trunc", "exp2", "log2", "invsqrt", "hypot", "atan2", "pow",
          "copysign", "nextafter", "ftello", "fseeko",
          "strtoll", "strtoull", "cbrt", "strtold_l", "fallocate",
-         "backtrace"]
-@@ -177,7 +177,7 @@ OPTIONAL_STDFUNCS_MAYBE = [
+         "backtrace", "madvise"]
+@@ -179,7 +179,7 @@ OPTIONAL_STDFUNCS_MAYBE = [
  # C99 functions: float and long double versions
  C99_FUNCS = [
      "sin", "cos", "tan", "sinh", "cosh", "tanh", "fabs", "floor", "ceil",
@@ -539,7 +526,7 @@ index 356482b..9f93b00 100644
      "asin", "acos", "atan", "asinh", "acosh", "atanh", "hypot", "atan2",
      "pow", "fmod", "modf", 'frexp', 'ldexp', "exp2", "log2", "copysign",
      "nextafter", "cbrt"
-@@ -189,7 +189,7 @@ C99_COMPLEX_TYPES = [
+@@ -191,7 +191,7 @@ C99_COMPLEX_TYPES = [
      ]
  C99_COMPLEX_FUNCS = [
      "cabs", "cacos", "cacosh", "carg", "casin", "casinh", "catan",
@@ -627,10 +614,11 @@ index f2e5229..6f919f1 100644
   */
  #ifdef HAVE_@KIND@@C@
  NPY_INPLACE @type@ npy_@kind@@c@(@type@ x)
-@@ -473,6 +473,19 @@ NPY_INPLACE @type@ npy_@kind@@c@(@type@ x)
+@@ -472,6 +472,19 @@ NPY_INPLACE @type@ npy_@kind@@c@(@type@ x)
+ 
  /**end repeat1**/
  
- /**begin repeat1
++/**begin repeat1
 + * #kind = invsqrt#
 + * #KIND = INVSQRT#
 + */
@@ -643,56 +631,54 @@ index f2e5229..6f919f1 100644
 +
 +/**end repeat1**/
 +
-+/**begin repeat1
+ /**begin repeat1
   * #kind = atan2,hypot,pow,fmod,copysign#
   * #KIND = ATAN2,HYPOT,POW,FMOD,COPYSIGN#
-  */
 diff --git a/numpy/core/src/umath/funcs.inc.src b/numpy/core/src/umath/funcs.inc.src
 index da2ab07..45d80ce 100644
 --- a/numpy/core/src/umath/funcs.inc.src
 +++ b/numpy/core/src/umath/funcs.inc.src
-@@ -271,6 +271,13 @@ nc_sqrt@c@(@ctype@ *x, @ctype@ *r)
+@@ -270,6 +270,13 @@ nc_sqrt@c@(@ctype@ *x, @ctype@ *r)
+     return;
  }
  
- static void
++static void
 +nc_invsqrt@c@(@ctype@ *x, @ctype@ *r)
 +{
 +    *r = npy_cinvsqrt@c@(*x);
 +    return;
 +}
 +
-+static void
+ static void
  nc_rint@c@(@ctype@ *x, @ctype@ *r)
  {
-     r->real = npy_rint@c@(x->real);
-@@ -294,6 +301,13 @@ nc_log1p@c@(@ctype@ *x, @ctype@ *r)
+@@ -293,6 +300,13 @@ nc_log1p@c@(@ctype@ *x, @ctype@ *r)
+     return;
  }
  
- static void
++static void
 +nc_erf@c@(@ctype@ *x, @ctype@ *r)
 +{
 +    *r = npy_cerf@c@(*x);
 +    return;
 +}
 +
-+static void
+ static void
  nc_exp@c@(@ctype@ *x, @ctype@ *r)
  {
-     *r = npy_cexp@c@(*x);
 diff --git a/numpy/core/src/umath/loops.c.src b/numpy/core/src/umath/loops.c.src
-index 0b02031..0cc2823 100644
+index ae3ece7..983dbac 100644
 --- a/numpy/core/src/umath/loops.c.src
 +++ b/numpy/core/src/umath/loops.c.src
-@@ -1,5 +1,7 @@
+@@ -1,5 +1,6 @@
  /* -*- c -*- */
 -
 +#include "mkl.h"
-+#include "npy_math.c"
 +#include <fenv.h>
  #define _UMATHMODULE
+ #define _MULTIARRAYMODULE
  #define NPY_NO_DEPRECATED_API NPY_API_VERSION
- 
-@@ -22,14 +24,6 @@
+@@ -20,14 +21,6 @@
  
  #include <string.h> /* for memchr */
  
@@ -707,10 +693,11 @@ index 0b02031..0cc2823 100644
  
  /*
   * largest simd vector size in bytes numpy supports
-@@ -41,13 +35,89 @@
+@@ -38,6 +31,82 @@
+ #define NPY_MAX_SIMD_SIZE 1024
  #endif
  
- /*
++/*
 + * cutoff blocksize for pairwise summation
 + * decreasing it decreases errors slightly as more pairs are summed but
 + * also lowers performance, as the inner loop is unrolled eight times it is
@@ -786,10 +773,10 @@ index 0b02031..0cc2823 100644
 + */
 +#define DISJOINT_OR_SAME(p1, p2, n, s) (((p1) == (p2)) || ((p2) + (n)*(s) < (p1)) || ((p1) + (n)*(s) < (p2)) )
 +
-+/*
+ /*
   * include vectorized functions and dispatchers
   * this file is safe to include also for generic builds
-  * platform specific instructions are either masked via the proprocessor or
+@@ -45,7 +114,7 @@
   * runtime detected
   */
  #include "simd.inc"
@@ -798,7 +785,7 @@ index 0b02031..0cc2823 100644
  
  /*
   *****************************************************************************
-@@ -90,6 +160,21 @@
+@@ -88,6 +157,21 @@
      npy_intp i;\
      for(i = 0; i < n; i++, ip1 += is1, op1 += os1)
  
@@ -820,7 +807,7 @@ index 0b02031..0cc2823 100644
  /*
   * loop with contiguous specialization
   * op should be the code working on `tin in` and
-@@ -796,14 +881,9 @@ BOOL_@kind@(char **args, npy_intp *dimensions, npy_intp *steps, void *NPY_UNUSED
+@@ -794,14 +878,9 @@ BOOL_@kind@(char **args, npy_intp *dimensions, npy_intp *steps, void *NPY_UNUSED
  NPY_NO_EXPORT void
  BOOL_@kind@(char **args, npy_intp *dimensions, npy_intp *steps, void *NPY_UNUSED(func))
  {
@@ -838,7 +825,7 @@ index 0b02031..0cc2823 100644
      }
  }
  /**end repeat**/
-@@ -970,6 +1050,9 @@ NPY_NO_EXPORT NPY_GCC_OPT_3 @ATTR@ void
+@@ -968,6 +1047,9 @@ NPY_NO_EXPORT NPY_GCC_OPT_3 @ATTR@ void
   * #OP =  >, <#
   **/
  
@@ -848,35 +835,7 @@ index 0b02031..0cc2823 100644
  NPY_NO_EXPORT void
  @TYPE@_@kind@(char **args, npy_intp *dimensions, npy_intp *steps, void *NPY_UNUSED(func))
  {
-@@ -1341,14 +1424,14 @@ NPY_NO_EXPORT void
-         }
-     }
-     if (give_future_warning) {
--        NPY_ALLOW_C_API_DEF
--        NPY_ALLOW_C_API;
-+	NPY_ALLOW_C_API_DEF
-+	NPY_ALLOW_C_API;
-         /* 2016-01-18, 1.11 */
-         if (DEPRECATE_FUTUREWARNING(
-                 "In the future, 'NAT @OP@ x' and 'x @OP@ NAT' "
-                 "will always be False.") < 0) {
--            /* nothing to do, we return anyway */
--        }
-+	    /* nothing to do, we return anyway */
-+	}
-         NPY_DISABLE_C_API;
-     }
- }
-@@ -1374,7 +1457,7 @@ NPY_NO_EXPORT void
-         if (DEPRECATE_FUTUREWARNING(
-                 "In the future, NAT != NAT will be True "
-                 "rather than False.") < 0) {
--            /* nothing to do, we return anyway */
-+	    /* nothing to do, we return anyway */
-         }
-         NPY_DISABLE_C_API;
-     }
-@@ -1632,98 +1715,91 @@ TIMEDELTA_mm_d_divide(char **args, npy_intp *dimensions, npy_intp *steps, void *
+@@ -1629,98 +1711,91 @@ TIMEDELTA_mm_m_remainder(char **args, npy_intp *dimensions, npy_intp *steps, voi
   * Float types
   *  #type = npy_float, npy_double#
   *  #TYPE = FLOAT, DOUBLE#
@@ -1036,7 +995,7 @@ index 0b02031..0cc2823 100644
      }
  }
  
-@@ -1731,113 +1807,1507 @@ pairwise_sum_@TYPE@(char *a, npy_intp n, npy_intp stride)
+@@ -1728,114 +1803,1508 @@ pairwise_sum_@TYPE@(char *a, npy_intp n, npy_intp stride)
  
  /**begin repeat
   * Float types
@@ -1301,6 +1260,7 @@ index 0b02031..0cc2823 100644
 -    BINARY_LOOP {
 -        const @type@ in1 = *(@type@ *)ip1;
 -        const @type@ in2 = *(@type@ *)ip2;
+-        *((@type@ *)op1)= npy_copysign@c@(in1, in2);
 +    if(IS_UNARY_CONT(@type@, @type@) &&
 +           dimensions[0] > VML_TRANSCEDENTAL_THRESHOLD &&
 +           DISJOINT_OR_SAME(args[0], args[1], dimensions[0], sizeof(@type@)) ) {
@@ -2609,10 +2569,11 @@ index 0b02031..0cc2823 100644
 +    BINARY_LOOP {
 +        const @type@ in1 = *(@type@ *)ip1;
 +        const @type@ in2 = *(@type@ *)ip2;
-         *((@type@ *)op1)= npy_copysign@c@(in1, in2);
++        *((@type@ *)op1)= npy_copysign@c@(in1, in2);
      }
  }
-@@ -1946,9 +3416,15 @@ NPY_NO_EXPORT void
+ 
+@@ -1942,9 +3411,15 @@ NPY_NO_EXPORT void
  NPY_NO_EXPORT void
  @TYPE@_square(char **args, npy_intp *dimensions, npy_intp *steps, void *NPY_UNUSED(data))
  {
@@ -2631,7 +2592,7 @@ index 0b02031..0cc2823 100644
          UNARY_LOOP {
              const @type@ in1 = *(@type@ *)ip1;
              *((@type@ *)op1) = in1*in1;
-@@ -1959,10 +3435,15 @@ NPY_NO_EXPORT void
+@@ -1955,10 +3430,15 @@ NPY_NO_EXPORT void
  NPY_NO_EXPORT void
  @TYPE@_reciprocal(char **args, npy_intp *dimensions, npy_intp *steps, void *NPY_UNUSED(data))
  {
@@ -2651,7 +2612,7 @@ index 0b02031..0cc2823 100644
          UNARY_LOOP {
              const @type@ in1 = *(@type@ *)ip1;
              *((@type@ *)op1) = 1/in1;
-@@ -1990,7 +3471,15 @@ NPY_NO_EXPORT void
+@@ -1986,7 +3466,15 @@ NPY_NO_EXPORT void
  NPY_NO_EXPORT void
  @TYPE@_absolute(char **args, npy_intp *dimensions, npy_intp *steps, void *NPY_UNUSED(func))
  {
@@ -2668,7 +2629,7 @@ index 0b02031..0cc2823 100644
          UNARY_LOOP {
              const @type@ in1 = *(@type@ *)ip1;
              const @type@ tmp = in1 > 0 ? in1 : -in1;
-@@ -2442,9 +3931,18 @@ HALF_ldexp_long(char **args, npy_intp *dimensions, npy_intp *steps, void *NPY_UN
+@@ -2439,9 +3927,18 @@ HALF_ldexp_long(char **args, npy_intp *dimensions, npy_intp *steps, void *NPY_UN
   * #ftype = npy_float, npy_double, npy_longdouble#
   * #c = f, , l#
   * #C = F, , L#
@@ -2687,7 +2648,7 @@ index 0b02031..0cc2823 100644
  static void
  pairwise_sum_@TYPE@(@ftype@ *rr, @ftype@ * ri, char * a, npy_intp n,
                      npy_intp stride)
-@@ -2481,14 +3979,14 @@ pairwise_sum_@TYPE@(@ftype@ *rr, @ftype@ * ri, char * a, npy_intp n,
+@@ -2478,14 +3975,14 @@ pairwise_sum_@TYPE@(@ftype@ *rr, @ftype@ * ri, char * a, npy_intp n,
  
          for (i = 8; i < n - (n % 8); i += 8) {
              /* small blocksizes seems to mess with hardware prefetch */
@@ -2707,7 +2668,7 @@ index 0b02031..0cc2823 100644
              r[7] += *((@ftype@ *)(a + (i + 6) * stride + sizeof(@ftype@)));
          }
  
-@@ -2745,10 +4243,30 @@ NPY_NO_EXPORT void
+@@ -2742,10 +4239,30 @@ NPY_NO_EXPORT void
  NPY_NO_EXPORT void
  @TYPE@_absolute(char **args, npy_intp *dimensions, npy_intp *steps, void *NPY_UNUSED(func))
  {
@@ -2742,16 +2703,16 @@ index 0b02031..0cc2823 100644
      }
  }
  
-@@ -2822,6 +4340,7 @@ NPY_NO_EXPORT void
-             ((@ftype@ *)op1)[1] = in2i;
-         }
+@@ -2771,6 +4288,7 @@ NPY_NO_EXPORT void
+                             (CEQ(in1r, in1i, 0.0, 0.0) ?  0 : NPY_NAN@C@));
+         ((@ftype@ *)op1)[1] = 0;
      }
 +    feclearexcept(FE_INVALID);
  }
- /**end repeat1**/
  
+ /**begin repeat1
 diff --git a/numpy/core/src/umath/loops.h.src b/numpy/core/src/umath/loops.h.src
-index 5c2b2c2..ecc2076 100644
+index 9b63273..e939c45 100644
 --- a/numpy/core/src/umath/loops.h.src
 +++ b/numpy/core/src/umath/loops.h.src
 @@ -159,8 +159,16 @@ NPY_NO_EXPORT void
@@ -2773,5 +2734,5 @@ index 5c2b2c2..ecc2076 100644
  
  /**begin repeat
 -- 
-2.7.4
+2.20.1
 
